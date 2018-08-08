@@ -19,7 +19,8 @@ class Trip extends Model
      */
     protected $fillable = [
         'user_id', 'driver_id', 'pick_up', 'drop_off', 'pickup_date', 'vehicle_type', 'price', 'status',
-        'created_at', 'updated_at', 'is_schedule', 'note', 'pickup_latitude', 'pickup_longitude', 'dropoff_latitude', 'dropoff_longitude', 'payment_type', 'current_latitude', 'current_longitude', 'payment_status'
+        'created_at', 'updated_at', 'is_schedule', 'note', 'pickup_latitude', 'pickup_longitude', 'dropoff_latitude',
+        'dropoff_longitude', 'payment_type', 'current_latitude', 'current_longitude', 'payment_status', 'rate'
     ];
     
     protected $hidden = [

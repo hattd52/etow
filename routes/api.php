@@ -47,10 +47,12 @@ const
     PASSWORD_INCORRECT = 411,
     EMAIL_DOES_NOT_EXIST = 412,
     LOGOUT_FAILED = 413,
+    ACCOUNT_INACTIVE = 414,
     TOKEN_MISSING = 507,
     TOKEN_MISS_MATCH = 510,
     TRIP_NOT_PERMISSION = 421,
-    PRICE_NOT_FOUND = 422;
+    PRICE_NOT_FOUND = 422,
+    TRIP_CANCEL_OR_COMPLETE = 423;
     
 const 
     STATUS_ACTIVE = 1,
@@ -91,6 +93,7 @@ Route::get('/v1/test-sms', 'Api\TestController@testSMS');
 Route::group(['middleware' => ['auth.api']], function () {
     Route::post('/v1/user/update-profile', 'Api\AccountController@updateProfile');
     Route::post('/v1/user/logout', 'Api\AccountController@logout');
+    Route::post('/v1/user/rate-trip', 'Api\AccountController@rateTrip');
 
     Route::get('/v1/price/list', 'Api\PriceController@index');
 
@@ -99,6 +102,9 @@ Route::group(['middleware' => ['auth.api']], function () {
     Route::get('/v1/trip/get-new-trip', 'Api\TripController@getNewTrip');
     Route::get('/v1/trip/get-my-trip', 'Api\TripController@getMyTrip');
     Route::post('/v1/trip/get-price', 'Api\TripController@getPriceByDistance');
-    
+    Route::get('/v1/trip/get-setting-time', 'Api\TripController@getSettingTime');
+    Route::post('/v1/trip/update-location', 'Api\TripController@updateLocation');
+    Route::post('/v1/trip/update-payment-status', 'Api\TripController@updatePaymentStatus');
+
     Route::post('/v1/feedback/send', 'Api\FeedbackController@create');
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiBaseController;
 use App\Models\Account;
+use App\Models\Setting;
 use App\Models\Trip;
 use App\Models\Price;
 use App\Transformers\Api\TripTransformer;
@@ -85,8 +86,14 @@ class TripController extends ApiBaseController
     public function update(Request $request) {
         $data = [];
         list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
-
+        $note = $request->get('note');
         if(!$trip_id || !$status) {
+            $this->message = 'Missing params';
+            $this->http_code = MISSING_PARAMS;
+            goto next;
+        }
+
+        if(in_array($status, [TRIP_STATUS_CANCEL, TRIP_STATUS_REJECT]) && !$note) {
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
             goto next;
@@ -96,6 +103,7 @@ class TripController extends ApiBaseController
         $trip      = Trip::find($trip_id);
         $driver_id = $trip->driver_id;
         $user_id   = $trip->user_id;
+        $currentStatus = $trip->status;
         if($driver_id) {
             if($this->account->id != $user_id || $this->account->id != $driver_id) {
                 $this->message = 'You are not permission with this trip';
@@ -110,14 +118,74 @@ class TripController extends ApiBaseController
             }
         }
 
+        if(in_array($currentStatus, [TRIP_STATUS_CANCEL, TRIP_STATUS_COMPLETED])) {
+            $this->message = 'Trip canceled or completed.';
+            $this->http_code = TRIP_CANCEL_OR_COMPLETE;
+            goto next;
+        }
+
         $trip->status  = $status;
         if(!$driver_id && $this->account->type == TYPE_DRIVER && $this->account->id != $user_id) {
             $trip->driver_id = $this->account->id;
+        }
+
+        if($status == TRIP_STATUS_COMPLETED) {
+            $trip->payment_status = PAYMENT_STATUS_SUCCESS;
         }
         $trip->save();
 
         $this->status  = STATUS_SUCCESS;
         $this->message = 'update status trip successfully';
+
+        next:
+        return $this->ResponseData($data);
+    }
+
+    public function updateLocation(Request $request) {
+        $data = [];
+        list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
+        $lat  = $request->get('current_latitude');
+        $long = $request->get('current_longitude');
+        if(!$trip_id || !$lat || !$long) {
+            $this->message = 'Missing params';
+            $this->http_code = MISSING_PARAMS;
+            goto next;
+        }        
+
+        /** @var Trip $trip */
+        $trip      = Trip::find($trip_id);
+        if(!empty($trip)) {
+            $trip->current_latitude  = $lat;
+            $trip->current_longitude = $long;
+            $trip->save();
+        }
+
+        $this->status  = STATUS_SUCCESS;
+        $this->message = 'update location trip successfully';
+
+        next:
+        return $this->ResponseData($data);
+    }
+
+    public function updatePaymentStatus(Request $request) {
+        $data = [];
+        list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
+        $payment_status = $request->get('payment_status');
+        if(!$trip_id || !$payment_status) {
+            $this->message = 'Missing params';
+            $this->http_code = MISSING_PARAMS;
+            goto next;
+        }
+
+        /** @var Trip $trip */
+        $trip      = Trip::find($trip_id);
+        if(!empty($trip)) {
+            $trip->payment_status  = $payment_status;
+            $trip->save();
+        }
+
+        $this->status  = STATUS_SUCCESS;
+        $this->message = 'update location trip successfully';
 
         next:
         return $this->ResponseData($data);
@@ -189,6 +257,19 @@ class TripController extends ApiBaseController
         $this->message = 'get price successful';
         
         next:
+        return $this->ResponseData($data);
+    }
+    
+    public function getSettingTime() {
+        $timeKm     = Setting::getValueByKey(SETTING_TIME_KM);
+        $timeBuffer = Setting::getValueByKey(SETTING_TIME_BUFFER);
+
+        $data = [
+            'time_km'     => $timeKm,
+            'time_buffer' => $timeBuffer
+        ];
+        $this->status  = STATUS_SUCCESS;
+        $this->message = 'Get time setting successful';
         return $this->ResponseData($data);
     }
 }

@@ -12,6 +12,7 @@ use App\Http\Controllers\ApiBaseController;
 use App\Models\Account;
 use App\Models\Driver;
 use App\Models\Otp;
+use App\Models\Trip;
 use App\Models\UserToken;
 use App\Transformers\Api\AccountTransformer;
 use Carbon\Carbon;
@@ -123,8 +124,9 @@ class AccountController extends ApiBaseController
         /** @var Account $account */
         $account        = Auth::user();
         if($account->status == STATUS_INACTIVE) {
+            Auth::logout();
             $this->message = 'Account is inactive.';
-            $this->http_code = EMAIL_OR_PASSWORD_INCORRECT;
+            $this->http_code = ACCOUNT_INACTIVE;
             goto next;
         }
 
@@ -326,5 +328,29 @@ class AccountController extends ApiBaseController
 
         next:
         return $this->ResponseData();
+    }
+
+    public function rateTrip(Request $request) {
+        $data = [];
+        list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
+        $rate = $request->get('rate');
+        if(!$trip_id || !$rate) {
+            $this->message = 'Missing params';
+            $this->http_code = MISSING_PARAMS;
+            goto next;
+        }
+
+        /** @var Trip $trip */
+        $trip      = Trip::find($trip_id);
+        if(!empty($trip)) {
+            $trip->rate  = $rate;
+            $trip->save();
+        }
+
+        $this->status  = STATUS_SUCCESS;
+        $this->message = 'rate trip successfully';
+
+        next:
+        return $this->ResponseData($data);
     }
 }

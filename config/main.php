@@ -11,6 +11,16 @@ const
     TRIP_COMPLETE = 'complete',
     TRIP_REJECT   = 'reject',
     TRIP_CANCEL   = 'cancel';
+
+const
+    SETTING_TIME_KM = 'TIME_KM',
+    SETTING_TIME_BUFFER = 'TIME_BUFFER';
+
+const
+    PAYMENT_STATUS_PENDING = 'pending',
+    PAYMENT_STATUS_SUCCESS = 'success',
+    PAYMENT_STATUS_FAIL = 'fail';
+
 return [
     'driver_status' => [
         'online' => 1,
