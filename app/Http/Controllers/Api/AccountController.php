@@ -332,7 +332,7 @@ class AccountController extends ApiBaseController
 
     public function rateTrip(Request $request) {
         $data = [];
-        list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
+        $trip_id = $request->get('trip_id');
         $rate = $request->get('rate');
         if(!$trip_id || !$rate) {
             $this->message = 'Missing params';
