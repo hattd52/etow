@@ -120,7 +120,6 @@ class AccountController extends ApiBaseController
         }
 
         $token = Hash::make(md5($email));
-
         /** @var Account $account */
         $account        = Auth::user();
         $account->token = $token;
