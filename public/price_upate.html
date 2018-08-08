@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="" name="description" />
+    <title>eTow</title>
+    
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    
+    <link href="assets/css/select2.min.css" rel="stylesheet" >
+    <link href="assets/css/checkbox3.min.css" rel="stylesheet" >
+    <!-- Custom Styles-->
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <div class="business_name">Settings</div>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="dashboard.html"><img src="assets/logo1.png" width="70" alt="eTow" title="eTow Logo"></a>
+            </div> <!--navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li class="divider"></li>
+                        <li><a href="index.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+        </nav>
+        <!--/. NAV TOP  -->
+        
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+                    <li><a  href="dashboard.html"><i class="	fa fa-calendar"></i> Dashboard</a></li> 
+                    <li><a href="users.html"><i class="fa fa-users"></i> Users</a></li>
+                    <li><a href="drivers.html"><i class="fa fa-star"></i> Drivers</a></li>
+                    <li><a href="trips.html"><i class="fa fa-truck"> </i> Trips</a></li>
+                    <li><a class="active-menu" href="#"><i class="fa fa-cogs"></i> Settings</a></li>                
+                    <li> <a  href="feedback.html"><i class="fa fa-atfa fa-envelope"></i> Feedback</a></li> 
+                    
+                </ul>
+            </div>
+        </nav>
+        <!-- /. NAV SIDE  -->
+      
+		<div id="page-wrapper">
+            <div class="header"> 
+                <h1 class="page-header">
+                
+                </h1>
+            </div> <!--header-->
+		
+		<div id="page-inner"> 
+            <div class="row">
+                        <div class="col-xs-12">
+                            <div class="panel panel-default">
+                                
+                                <div class="panel-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Update Price</label>
+                                            <input style="width:340px; " type="file" maxlength="3" class="form-control" id="exampleInputEmail1" placeholder="Enter Commission"> 
+                                        </div>
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        <div class="btn btn-success btn_spcing popup" onclick="myFunction()">Update Price
+                                          <div class="popuptext" id="myPopup">
+                                          
+                                         <h1> Are you sure you want to update price ? </h1><br/><br/>
+                                          <div class="btn btn-danger btn_spcing"> No</div> <a href="settings.html"><div class="btn btn-success btn_spcing"> Yes</div></a>
+                                          <br/><br/>
+                                          </div>
+                                        </div>
+                                      
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /. ROW  -->
+           
+        </div>
+		<footer><p>&copy; 2018 All right reserved. Developed by: <a href="http://bcwebco.com" target="_blank">bcwebco.com</a></p></footer>
+    </div>
+             <!-- /. PAGE INNER  -->
+            </div>
+         <!-- /. PAGE WRAPPER  -->
+         
+     <script>
+function myFunction1() {
+    confirm("Are you sure you want to update price ?");
+}
+</script>   
+
+
+
+ <script>
+ 
+ function myFunction1() {
+var close = document.getElementsByClassName("closebtn");
+var i;
+
+for (i = 0; i < close.length; i++) {
+    close[i].onclick = function(){
+        var div = this.parentElement;
+        div.style.opacity = "0";
+        setTimeout(function(){ div.style.display = "none"; }, 600);
+    }
+}
+
+ }
+</script>
+
+<script>
+// When the user clicks on div, open the popup
+function myFunction() {
+    var popup = document.getElementById("myPopup");
+    popup.classList.toggle("show");
+}
+</script>
+
+
+         
+
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <!-- Bootstrap Js -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    <!-- Metis Menu Js -->
+    <script src="assets/js/jquery.metisMenu.js"></script>
+    <script src="assets/js/select2.full.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    $(".selectbox").select2();
+    });
+    </script>
+    <!-- Custom Js -->
+    <script src="assets/js/custom-scripts.js"></script> 
+	
+    
+   
+</body>
+</html>

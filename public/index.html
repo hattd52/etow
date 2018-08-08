@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="" name="description" />
+    <meta content="Templateq" name="author" />
+    <title>eTow</title>
+    
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <!-- Morris Chart Styles-->
+    <link href="assets/js/morris/morris-0.4.3.min.css" rel="stylesheet" />
+    <!-- Custom Styles-->
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="assets/js/Lightweight-Chart/cssCharts.css"> 
+</head>
+
+<body style="background:#fff !important;">
+    <div id="wrapper">
+    	<div class="login_logo"><img src="assets/logo.png" width="124" height="124"></div>
+        <div class="login_wrapper">
+        
+            <div class="content">
+            <form class="login-form" action="dashboard.html" method="post" novalidate>
+                <input type="hidden" name="_token" value="qAhAIEshAyxmDvg7aj22m8xY7Y9FF9FNFKawC6a1">
+                <div class="form-title">Sign In</div>
+                        
+                <div class="form-group">			
+                    <label class="control-label visible-ie8 visible-ie9">Email</label>
+                    <input class="form-control form-control-solid" type="email" placeholder="Email" name="email">
+                </div>
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">Password</label>
+                    <input class="form-control form-control-solid placeholder-no-fix" type="password" autocomplete="off" placeholder="Password" name="password">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btnsubmit uppercase">Login</button>			
+                </div>
+                <div class="create-account">
+                    <p>
+                        <a href="javascript:;" id="register-btn" class="uppercase">Forgot Password</a>
+                    </p>
+                </div>		
+            </form>
+            <form class="register-form" id="form-update" action="http://delivermesolutions.com/register" method="post" novalidate style="display:none;">
+                <div>Sign Up</div>		
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">Full Name</label>
+                    <input class="form-control placeholder-no-fix" type="text" placeholder="Full Name" name="name">
+                </div>
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">Email</label>
+                    <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email">
+                </div>					
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">Password</label>
+                    <input class="form-control placeholder-no-fix" type="password" id="password" placeholder="Password" name="password">
+                </div>
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
+                    <input class="form-control placeholder-no-fix" type="password" placeholder="Re-type Your Password" name="rpassword">
+                </div>		
+                <div class="form-actions">
+                    <button type="button" id="register-back-btn" class="btn btn-default">Back</button>
+                    <button type="submit" id="register-submit-btn" class="btn btn-submit uppercase pull-right">Submit</button>
+                </div>
+            </form>
+            </div>
+        </div> <!--login_wrapper -->    
+    	<div class="login_copyright">Copyright 2018 eTow</div>
+    </div><!--wrapper -->  
+</body>
+</html>

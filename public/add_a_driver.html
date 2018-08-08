@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="" name="description" />
+    <title>eTow</title>
+    
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    
+    <link href="assets/css/select2.min.css" rel="stylesheet" >
+    <link href="assets/css/checkbox3.min.css" rel="stylesheet" >
+    <!-- Custom Styles-->
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <div class="business_name">Add A Driver</div>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="dashboard.html"><img src="assets/logo1.png" width="70" alt="eTow" title="eTow Logo"></a>
+            </div> <!--navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li class="divider"></li>
+                        <li><a href="index.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+        </nav>
+        <!--/. NAV TOP  -->
+        
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+                    <li><a  href="dashboard.html"><i class="	fa fa-calendar"></i> Dashboard</a></li>
+                    <li><a href="users.html"><i class="fa fa-users"></i> Users</a></li>
+                    <li><a class="active-menu" href="drivers.html"><i class="fa fa-star"></i> Drivers</a></li>
+					<li><a href="trips.html"><i class="fa fa-truck"> </i> Trips</a></li>
+                    <li><a href="settings.html"><i class="fa fa-cogs"></i> Settings</a></li>                    
+                    <li> <a href="feedback.html"><i class="fa fa-atfa fa-envelope"></i> Feedback</a></li>
+                      
+                    
+                </ul>
+            </div>
+        </nav>
+        <!-- /. NAV SIDE  -->
+      
+		<div id="page-wrapper">		
+		<div id="page-inner"> 
+            <div class="row">
+                        <div class="col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                </div>
+                                <div class="panel-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Driver Name</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Enter Driver Name">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Company Name (Optional)</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Enter Company Name">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Driver ID</label>
+                                            <div class="status_red">000000021</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Email ID</label>
+                                            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter Email ID">
+                                        </div>
+                                      
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Password</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Enter Password">
+                                        </div>
+                                        
+                                      
+                               
+                                     <div class="sub-title">Type Of Services</div>
+                                    <div>
+                                       <div class="checkbox3 checkbox-inline checkbox-check checkbox-light">
+                                           <input type="checkbox" id="checkbox-7">
+                                            <label for="checkbox-7">
+                                              Flat Bed
+                                            </label>
+                                          </div>
+                                          
+                                          <div class="checkbox3 checkbox-inline checkbox-check checkbox-light">
+                                            <input type="checkbox" id="checkbox-8">
+                                            <label for="checkbox-8">
+                                              Normal
+                                            </label>
+                                          </div>
+                        
+                                    </div>
+                                    <br/>
+                                      <div class="form-group">
+                                            <label for="exampleInputEmail1">Vehicle Number</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Enter Vehicle Number">
+                                        </div>
+                                        
+                                  
+                                        
+                                        <div class="gallery">
+                                         
+                                        <div class="form-group">
+                                            <label for="">Upload Driver Photo</label>
+                                            <div class="clearfix"></div>
+                                            <div class="b_l_gal"></div>
+                                            <div class="clearfix"></div>
+                                            
+											<input type="file" id="exampleInputFile">
+                                            
+                                        </div>
+                                        
+                                        </div> <!-- gallery-->
+                                        
+                                          <div class="gallery">
+                                         
+                                        <div class="form-group">
+                                            <label for="">Upload Driver License</label>
+                                            <div class="clearfix"></div>
+                                            <div class="b_l_gal"></div>
+                                            <div class="clearfix"></div>
+                                            
+											<input type="file" id="exampleInputFile">
+                                            
+                                        </div>
+                                        
+                                        </div> <!-- gallery-->
+                                        
+                                          <div class="gallery">
+                                         
+                                        <div class="form-group">
+                                            <label for="">Upload Driver Emirates ID</label>
+                                            <div class="clearfix"></div>
+                                            <div class="b_l_gal"></div>
+                                            <div class="clearfix"></div>
+                                            
+											<input type="file" id="exampleInputFile">
+                                            
+                                        </div>
+                                        
+                                        </div> <!-- gallery-->
+                                        
+                                          <div class="gallery">
+                                         
+                                        <div class="form-group">
+                                            <label for="">Upload Mulkiya</label>
+                                            <div class="clearfix"></div>
+                                            <div class="b_l_gal"></div>
+                                            <div class="clearfix"></div>
+                                            
+											<input type="file" id="exampleInputFile">
+                                            
+                                        </div>
+                                        
+                                        </div> <!-- gallery-->
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        <button type="submit" class="btn btn-success btn_spcing">Add A Driver</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /. ROW  -->
+           
+        </div>
+		<footer><p>&copy; 2018 All right reserved. Developed by: <a href="http://bcwebco.com" target="_blank">bcwebco.com</a></p></footer>
+    </div>
+             <!-- /. PAGE INNER  -->
+            </div>
+         <!-- /. PAGE WRAPPER  -->
+
+	<script src="assets/js/jquery-1.10.2.js"></script>
+    <!-- Bootstrap Js -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    <!-- Metis Menu Js -->
+    <script src="assets/js/jquery.metisMenu.js"></script>
+    <script src="assets/js/select2.full.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    $(".selectbox").select2();
+    });
+    </script>
+    <!-- Custom Js -->
+    <script src="assets/js/custom-scripts.js"></script> 
+	
+    
+   
+</body>
+</html>
