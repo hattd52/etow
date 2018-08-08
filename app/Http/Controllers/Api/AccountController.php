@@ -119,10 +119,16 @@ class AccountController extends ApiBaseController
             goto next;
         }
 
-        $token = Hash::make(md5($email));
 
         /** @var Account $account */
         $account        = Auth::user();
+        if($account->status == STATUS_INACTIVE) {
+            $this->message = 'Account is inactive.';
+            $this->http_code = EMAIL_OR_PASSWORD_INCORRECT;
+            goto next;
+        }
+
+        $token = Hash::make(md5($email));
         $account->token = $token;
         $account->save();
 
