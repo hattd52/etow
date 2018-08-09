@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiBaseController;
 use App\Models\Account;
-use App\Models\Setting;
 use App\Models\Trip;
 use App\Models\Price;
 use App\Transformers\Api\TripTransformer;
@@ -13,12 +12,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use JWTAuth;
 use JWTAuthException;
+use App\Models\Setting;
 
 class TripController extends ApiBaseController
 {
     public function __construct(Request $request){
         parent::__construct($request);
-    }    
+    }
 
     public function _getParams(Request $request) {
         $pick_up      = $request->get('pick_up');
@@ -34,7 +34,7 @@ class TripController extends ApiBaseController
     public function create(Request $request) {
         //list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
         $data = [];
-        
+
         $trip = $request->get('trip');
         if(!$trip) {
             $this->message = 'Missing params';
@@ -47,7 +47,7 @@ class TripController extends ApiBaseController
         $drop_off     = $trips->drop_off;
         $vehicle_type = $trips->vehicle_type;
         $price        = $trips->price;
-        
+
         if(!$pick_up || !$drop_off || !$vehicle_type || !$price) {
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
@@ -81,12 +81,13 @@ class TripController extends ApiBaseController
 
         next:
         return $this->ResponseData($data);
-    }    
+    }
 
     public function update(Request $request) {
         $data = [];
         list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
         $note = $request->get('note');
+
         if(!$trip_id || !$status) {
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
@@ -111,7 +112,7 @@ class TripController extends ApiBaseController
                 goto next;
             }
         } else {
-            if($this->account->id != $user_id) {
+            if($this->account->type == 1 && $this->account->id != $user_id) { // user other
                 $this->message = 'You are not permission with this trip';
                 $this->http_code = TRIP_NOT_PERMISSION;
                 goto next;
@@ -128,7 +129,6 @@ class TripController extends ApiBaseController
         if(!$driver_id && $this->account->type == TYPE_DRIVER && $this->account->id != $user_id) {
             $trip->driver_id = $this->account->id;
         }
-
         if($status == TRIP_STATUS_COMPLETED) {
             $trip->payment_status = PAYMENT_STATUS_SUCCESS;
         }
@@ -150,7 +150,7 @@ class TripController extends ApiBaseController
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
             goto next;
-        }        
+        }
 
         /** @var Trip $trip */
         $trip      = Trip::find($trip_id);
@@ -232,34 +232,34 @@ class TripController extends ApiBaseController
         $this->message = 'get trip successful';
         return $this->ResponseData($data);
     }
-    
+
     public function getPriceByDistance(Request $request){
         $data = [];
-        
+
         $distance = $request->get('distance');
         if(!$distance) {
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
             goto next;
         }
-        
+
         $price = Price::getPriceByDistance($distance);
         if(empty($price)) {
             $this->message = 'Price not found';
             $this->http_code = PRICE_NOT_FOUND;
             goto next;
         }
-        
+
         $price = floatval($price->price);
         $data  = $price;
-        
+
         $this->status  = STATUS_SUCCESS;
         $this->message = 'get price successful';
-        
+
         next:
         return $this->ResponseData($data);
     }
-    
+
     public function getSettingTime() {
         $timeKm     = Setting::getValueByKey(SETTING_TIME_KM);
         $timeBuffer = Setting::getValueByKey(SETTING_TIME_BUFFER);
