@@ -111,6 +111,11 @@ Route::group(['middleware' => ['auth']], function () {
         'uses' => 'TripController@typeByUser',
         //'middleware' => 'can:employee.employees.index'
     ]);
+    Route::post('/ajax/trips/map', [
+        'as' => 'ajax.trip.map',
+        'uses' => 'Ajax\TripController@map',
+        //'middleware' => 'can:employee.employees.index'
+    ]);
 
     //==================== Setting =====================
     Route::get('/settings', [

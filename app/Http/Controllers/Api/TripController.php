@@ -55,32 +55,42 @@ class TripController extends ApiBaseController
         }
 
         $user_id = $this->account->id;
-        $dataInsert = [
-            'user_id'      => $user_id,
-            'pick_up'      => $pick_up,
-            'drop_off'     => $drop_off,
-            'pickup_latitude' => $trips->pickup_latitude,
-            'pickup_longitude' => $trips->pickup_longitude,
-            'dropoff_latitude' => $trips->dropoff_latitude,
-            'dropoff_longitude' => $trips->dropoff_longitude,
-            //'current_latitude' => $trips->pickup_latitude,
-            //'current_longitude' => $trips->current_longitude,
-            'is_schedule'  => $trips->is_schedule,
-            'pickup_date'  => isset($trips->pickup_date) ? $trips->pickup_date : '',
-            'payment_type' => $trips->payment_type,
-            'payment_status' => isset($trips->payment_status) ? $trips->payment_status : '',
-            'vehicle_type' => $vehicle_type,
-            'price'        => $price,
-            'status'       => TRIP_STATUS_NEW,
-            'created_at'   => time()
-        ];
-        Trip::insertData($dataInsert);
-
-        $this->status  = 'success';
-        $this->message = 'trip create successfully';
+        $trip_id = $this->_createTrip($user_id, $trips);
+        //$trip = Trip::insertData($dataInsert);
+        if($trip_id) {
+            $data['trip_id'] = $trip_id;
+            $this->status  = 'success';
+            $this->message = 'trip create successfully';
+        } else {
+            $this->message = 'trip create failed.';
+        }
 
         next:
         return $this->ResponseData($data);
+    }
+
+    public function _createTrip($user_id, $trips) {
+        $trip_id = '';
+        $tripNew                    = new Trip();
+        $tripNew->user_id           = $user_id;
+        $tripNew->pick_up           = $trips->pick_up;
+        $tripNew->drop_off          = $trips->drop_off;
+        $tripNew->pickup_latitude   = $trips->pickup_latitude;
+        $tripNew->pickup_longitude  = $trips->pickup_longitude;
+        $tripNew->dropoff_latitude  = $trips->dropoff_latitude;
+        $tripNew->dropoff_longitude = $trips->dropoff_longitude;
+        $tripNew->is_schedule       = $trips->is_schedule;
+        $tripNew->pickup_date       = isset($trips->pickup_date) ? $trips->pickup_date : '';
+        $tripNew->payment_type      = $trips->payment_type;
+        $tripNew->payment_status    = isset($trips->payment_status) ? $trips->payment_status : '';
+        $tripNew->vehicle_type      = $trips->vehicle_type;
+        $tripNew->price             = $trips->price;
+        $tripNew->status            = TRIP_STATUS_NEW;
+        $tripNew->created_at        = time();
+        if($tripNew->save()) {
+            $trip_id = $tripNew->id;
+        }
+        return $trip_id;
     }
 
     public function update(Request $request) {
@@ -106,7 +116,7 @@ class TripController extends ApiBaseController
         $user_id   = $trip->user_id;
         $currentStatus = $trip->status;
         if($driver_id) {
-            if($this->account->id != $user_id || $this->account->id != $driver_id) {
+            if($this->account->id != $user_id && $this->account->id != $driver_id) {
                 $this->message = 'You are not permission with this trip';
                 $this->http_code = TRIP_NOT_PERMISSION;
                 goto next;

@@ -159,7 +159,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        FarhanWazir\GoogleMaps\GMapsServiceProvider::class,
     ],
 
     /*
@@ -212,6 +212,7 @@ return [
         //'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
         //'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         //'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class
+        'GMaps' => FarhanWazir\GoogleMaps\Facades\GMapsFacade::class,
     ],
 
 ];

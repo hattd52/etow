@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use \Illuminate\Support\Facades\Auth;
+use FarhanWazir\GoogleMaps\GMaps;
 
 class TripController extends Controller
 {
@@ -130,5 +131,33 @@ class TripController extends Controller
                 return '<span class="label label-success" style="">Completed</span>' ;
                 break;
         }
+    }
+
+    public function map()
+    {
+        $config['center'] = 'Sydney Airport,Sydney';
+        $config['zoom'] = '14';
+        $config['map_height'] = '400px';
+
+        $gmap = new GMaps();
+        $gmap->initialize($config);
+
+        $marker['position'] = 'Sydney Airport,Sydney';
+        $marker['infowindow_content'] = 'Sydney Airport,Sydney';
+        $gmap->add_marker($marker);
+
+        $marker['position'] = 'Kogarah Golf Club,Sydney';
+        $marker['infowindow_content'] = 'Kogarah Golf Club,Sydney';
+        $gmap->add_marker($marker);
+
+        $marker['position'] = 'The Lakes Golf Club,Sydney';
+        $marker['infowindow_content'] = 'The Lakes Golf Club,Sydney';
+        $gmap->add_marker($marker);
+
+        $map = $gmap->create_map();
+        
+        return '<div class="container">'.
+        '{!! $map["html"] !!}'.
+               '</div>';
     }
 }

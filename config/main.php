@@ -21,6 +21,9 @@ const
     PAYMENT_STATUS_SUCCESS = 'success',
     PAYMENT_STATUS_FAIL = 'fail';
 
+const
+    GOOGLE_API_KEY = 'AIzaSyA8V1_FXN1N1TPcl9mN_NZI10H9qW90UZk';
+
 return [
     'driver_status' => [
         'online' => 1,
