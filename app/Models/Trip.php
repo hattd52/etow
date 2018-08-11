@@ -213,4 +213,13 @@ class Trip extends Model
     public function getTotalTrip() {
         return self::query()->count();
     }
+
+    public function getTripGoing() {
+        $status = [TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_ON_GOING, TRIP_STATUS_JOURNEY_COMPLETED];
+        return self::query()
+            ->whereIn('status', $status)
+            ->whereNotNull('current_latitude')
+            ->whereNotNull('current_longitude')
+            ->get();
+    }
 }

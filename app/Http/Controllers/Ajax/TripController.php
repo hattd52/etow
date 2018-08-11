@@ -160,4 +160,27 @@ class TripController extends Controller
         '{!! $map["html"] !!}'.
                '</div>';
     }
+    
+    public function getMarker() {
+        $data = [];
+        $trip_going = $this->trip->getTripGoing();
+        if(!empty($trip_going)) {
+            foreach ($trip_going as $item) {
+                $data[] = [
+                    'coords' => ['lat' => floatval($item->current_latitude), 'lng' => floatval($item->current_longitude)],
+                    'iconImage' => asset('assets/img/car.png'),
+                    'content' =>
+                        '<ul>
+                            <li>Type: '.$item->vehicle_type.'</li>
+                            <li>Plate No: '.($item->driverR ? $item->driverR->vehicle_number : '').'</li>
+                            <li>Driver ID: '.($item->driverR ? $item->driverR->driver_code : '').'</li>
+                            <li>Driver Name: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->full_name : '').'<li/>
+                            <li>Phone: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->phone : '').'</li>
+                        </ul>'
+                ];
+            }
+        }
+        
+        return json_encode($data);
+    }    
 }

@@ -136,9 +136,15 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="board">
                 <div class="panel panel-primary">
-                    <div class="number">
-                        <h3 style="font-size:21px;">Current Vehicle On Trip</h3> <a href="" style="background:#ff0000 !important; color:#fff; margin-top:-16px; padding:2px 8px 2px 8px; float:right;">Refresh Map</a>
-                        {{--<img src="assets/img/assigned_location1.png" width="100%" height="477"> </div>--}}
+                    <div class="col-sm-12">
+                        <div class="col-sm-6">
+                            <h3 style="font-size:21px;">Current Vehicle On Trip</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <a id="btnRefresh"
+                               style="background:#ff0000 !important; color:#fff; padding:2px 8px 2px 8px; float:right; cursor: pointer">
+                                Refresh Map</a>
+                        </div>
                     </div>
                     <div class="col-sm-12" id="map">
                     </div>
@@ -161,12 +167,78 @@
 
 @push('js-stack')
 <script>
-    function initMap() {
+    var database = firebase.database();
+    var tripRef = database.ref('trip');
+    tripRef.on("child_changed", function(snap) {
+        getMarker();
+    });
+
+    $('#btnRefresh').on('click', function () {
+        getMarker();
+    });
+
+    function getMarker() {
+        $.ajax({
+            type: "POST",
+            url: '{{ route('ajax.trip.get_marker') }}',
+            data:{
+                "_token": "{{ csrf_token() }}"
+            },
+            success: initMap
+        });
+    }
+    getMarker();
+
+    function initMap(markers) {
         var options = {
-            zoom: 8,
-            center: {lat:21.028511, lng:105.804817}
-        }
+            zoom: 12,
+            center: {lat:21.017079, lng:105.783594}
+        };
+
         var map = new google.maps.Map(document.getElementById('map'), options);
+        google.maps.event.addListener(map, 'click', function () {
+            addMarker({coords:event.latLng});
+        });
+
+        {{--var markers = [--}}
+            {{--{--}}
+                {{--coords:{lat:21.017079, lng:105.783594},--}}
+                {{--iconImage: '{{ asset('assets/img/car.png') }}',--}}
+                {{--content:--}}
+//                '<ul>' +
+//                '<li>Type: Flatbed</li>' +
+//                '<li>Plate No: H 73021</li>' +
+//                '<li>Driver ID: 00000DR564</li>' +
+//                '<li>Driver Name: Yoona</>' +
+//                '<li>Phone: +971 500000087</li>' +
+//                '</ul>'
+            {{--}            --}}
+        {{--];--}}
+
+        if (typeof markers !== "undefined") {
+            markers = JSON.parse(markers);
+            for(var i=0; i < markers.length; i++) {
+                addMarker(markers[i]);
+            }
+        }
+
+        function addMarker(props) {
+            var marker = new google.maps.Marker({
+                position: props.coords,
+                map: map
+            });
+            if(props.iconImage){
+                marker.setIcon(props.iconImage);
+            }
+            if(props.content){
+                var infoWindow = new google.maps.InfoWindow({
+                    content: props.content
+                })
+            }
+            marker.addListener('click', function () {
+                infoWindow.open(map, marker);
+            });
+        }
     }
 </script>
 <script async defer
@@ -175,19 +247,6 @@
 <script type="text/javascript">
     $(function () {
         {{--$('#content_header').html('{{ trans('dashboard.content header') }}');--}}
-
-        {{--$.ajax({--}}
-            {{--type: "POST",--}}
-            {{--url: '{{ route('ajax.trip.map') }}',--}}
-            {{--data:{--}}
-                {{--"_token": "{{ csrf_token() }}",--}}
-            {{--},--}}
-            {{--// dataType: "text",--}}
-            {{--success: function(res){--}}
-                {{--//console.log(resultData);return;--}}
-                {{--$('#map').html(res);--}}
-            {{--}--}}
-        {{--});--}}
     });
 </script>
 @endpush

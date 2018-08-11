@@ -22,7 +22,7 @@ const
     PAYMENT_STATUS_FAIL = 'fail';
 
 const
-    GOOGLE_API_KEY = 'AIzaSyA8V1_FXN1N1TPcl9mN_NZI10H9qW90UZk';
+    GOOGLE_API_KEY = 'AIzaSyAIfGZf9EAxX7rQ7nam9xwtboW74pGZU-o';
 
 return [
     'driver_status' => [
