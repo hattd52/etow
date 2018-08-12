@@ -10,6 +10,14 @@
         <div class="col-sm-12">
             @include('notifications')
         </div>
+        <div class="col-sm-12">
+            <div class="sub_nav">
+                <div>
+                    <a href="{{ route('setting.update_price') }}"><div class="trips_but_margin"> <span class="trips_but_completed">Update Price</span></div></a>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">

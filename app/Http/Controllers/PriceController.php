@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Driver;
 use App\Models\Trip;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PriceController extends Controller
 {
@@ -78,9 +79,37 @@ class PriceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        if($request->hasFile('filePrice')){
+            $path = $request->file('filePrice')->getRealPath();
+            $data = \Excel::load($path)->get();
+            if($data->count()){
+                foreach ($data as $key => $value) {
+                    $item = $value->toArray();
+                    $km = $item['km'];
+                    if(substr_count($km, '-')) {
+                        $minMax = explode('-', $km);
+                        $min    = trim($minMax[0]);
+                        $max    = trim($minMax[1]);
+                    } elseif (substr_count($km, '+')) {
+                        $minMax = explode('+', $km);
+                        $min    = trim($minMax[0]);
+                        $max    = time();
+                    } else {
+                        $min = $max = $km;
+                    }
+                    $arr[] = ['km' => $km, 'price' => $item['price'], 'unit' => $item['unit'], 'min' => $min, 'max' => $max];
+                }
+
+                if(!empty($arr)){
+                    DB::table('price')->truncate();
+                    DB::table('price')->insert($arr);
+                }
+            }
+        }
+
+        return redirect()->route('setting.index')->withSuccess(trans('setting.message.update success'));
     }
 
     /**
@@ -92,5 +121,9 @@ class PriceController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function updatePrice() {        
+        return view('price.update');
     }
 }

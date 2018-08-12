@@ -133,6 +133,16 @@ Route::group(['middleware' => ['auth']], function () {
         'uses' => 'Ajax\PriceController@search',
         //'middleware' => 'can:employee.employees.index'
     ]);
+    Route::get('/settings/update-price', [
+        'as' => 'setting.update_price',
+        'uses' => 'PriceController@updatePrice',
+        //'middleware' => 'can:employee.employees.index'
+    ]);
+    Route::post('/settings/update', [
+        'as' => 'setting.update',
+        'uses' => 'PriceController@update',
+        //'middleware' => 'can:employee.employees.index'
+    ]);
 
     //==================== Feedback =====================
     Route::get('/feedbacks', [

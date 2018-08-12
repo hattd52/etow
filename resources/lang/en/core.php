@@ -17,6 +17,8 @@
             ],
             'setting' => [
                 'index' => 'Settings',
+                'update' => 'Settings',
+                'update_price' => 'Settings',
             ],
             'feedback' => [
                 'index' => 'Feedbacks',

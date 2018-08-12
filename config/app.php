@@ -160,6 +160,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         FarhanWazir\GoogleMaps\GMapsServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -213,6 +214,7 @@ return [
         //'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         //'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class
         'GMaps' => FarhanWazir\GoogleMaps\Facades\GMapsFacade::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

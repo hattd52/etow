@@ -7,6 +7,7 @@
         ],
         'message' => [
             'destroy success' => 'Delete user successfully.',
-            'destroy fail' => 'Delete user failed.'
+            'destroy fail' => 'Delete user failed.',
+            'update success' => 'Update setting successfully.'
         ]
     ];
