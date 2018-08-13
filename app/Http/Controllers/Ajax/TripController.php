@@ -85,10 +85,16 @@ class TripController extends Controller
                 $trip->pickup_date,
                 $this->getLabelStatus($trip->status, $trip->is_schedule),
                 $trip->note.'', // reason for cancel/reject
-                '', // paid by cash
+                $trip->payment_status == PAYMENT_STATUS_PENDING ? '' :
+                    ($trip->payment_status == PAYMENT_STATUS_SUCCESS ? $trip->price.' AED' : ''), // paid by cash
                 '', // paid by card
-                '', // payment status
-                "<img src='assets/img/rating.png'  alt='' />",
+                $trip->payment_status == PAYMENT_STATUS_PENDING ? '<span style="color:red">Pending</span>' :
+                    ($trip->payment_status == PAYMENT_STATUS_SUCCESS ?
+                        '<span style="color:green">Paid</span>' : '<span style="color:red">Failed</span>'), // payment status
+                //"<img src='assets/img/rating.png'  alt='' />",
+                '<div class="rating">'.
+                    $this->stars($trip->rate/2).
+                '</div>'
             ];
             $data[] = $tmp;
         }
@@ -122,7 +128,10 @@ class TripController extends Controller
                 return '<span class="label label-info" style="">Accept</span>' ;
                 break;
             case TRIP_STATUS_ARRIVED:
-                return '<span class="label label-primary" style="">Arrived</span>' ;
+                return '<span class="label label-info" style="">Arrived</span>' ;
+                break;
+            case TRIP_STATUS_ON_GOING:
+                return '<span class="label label-primary" style="">Ongoing</span>' ;
                 break;
             case TRIP_STATUS_JOURNEY_COMPLETED:
                 return '<span class="label label-primary" style="">Journey Completed</span>' ;
@@ -182,5 +191,30 @@ class TripController extends Controller
         }
         
         return json_encode($data);
-    }    
+    }
+
+    public function stars($rate){
+        $stars = '';
+        for($i=1;$i<= 5;$i++){
+            if($rate > 0) {
+                $check = round(($i - $rate),1);
+                if($check <= 0) {
+                    $stars .= "<image src='".asset('assets/star.png')."'>&nbsp;</image>";
+                } else {
+                    if($check <= 1) {
+                        if($check == 0.5)
+                            $stars .= "<image src='".asset('assets/star-half-empty.png')."'>&nbsp;</image>";
+                        else
+                            $stars .= "<image '".asset('assets/star.png')."'>&nbsp;</image>";
+                    } else {
+                        $stars .= "<image src='".asset('assets/star-empty.png')."' >&nbsp;</image>";
+                    }
+                }
+            } else {
+                $stars .= "<image src='".asset('assets/star-empty.png')."' >&nbsp;</image>";
+            }
+        }
+
+        return $stars;
+    }
 }

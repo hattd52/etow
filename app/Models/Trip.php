@@ -173,7 +173,7 @@ class Trip extends Model
         if (isset($params['type'])) {            
             switch ($params['type']) {
                 case TRIP_ON_GOING:
-                    $query->whereIn($table.'.status', [TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED]);
+                    $query->whereIn($table.'.status', [TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]);
                     break;
                 case TRIP_SCHEDULE:
                     $query->where($table.'.is_schedule', STATUS_ACTIVE);

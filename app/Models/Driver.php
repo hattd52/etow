@@ -39,6 +39,10 @@ class Driver extends Model
     public function tripR() {
         return $this->hasMany(Trip::class, 'driver_id', 'user_id');
     }
+
+    public static function avgRate($driver_id) {
+        return DB::table('trip')->where('driver_id', $driver_id)->avg('rate');
+    }
     
     /**
      * The attributes that should be hidden for arrays.

@@ -84,7 +84,8 @@ class AccountController extends Controller
                     $this->trip->totalTripByUserAndStatus($account->id, [TRIP_STATUS_NEW]).
                 '</a>',
                 '<a href="'.route('trip.by_user_type',[$account->id, TRIP_ON_GOING]).'" target="_blank" class="status_blue status_txtsize">'.
-                    $this->trip->totalTripByUserAndStatus($account->id, [TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED]).
+                    $this->trip->totalTripByUserAndStatus($account->id, [TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, 
+                        TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]).
                 '</a>',
                 "<div class='btn-group'>
                     <a href='".route('trip.by_user', [$account->id])."' target='_blank' class='btn  btn-success'>Views all Trip</a>

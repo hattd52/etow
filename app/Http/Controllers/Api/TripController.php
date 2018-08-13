@@ -82,7 +82,7 @@ class TripController extends ApiBaseController
         $tripNew->is_schedule       = $trips->is_schedule;
         $tripNew->pickup_date       = isset($trips->pickup_date) ? $trips->pickup_date : '';
         $tripNew->payment_type      = $trips->payment_type;
-        $tripNew->payment_status    = isset($trips->payment_status) ? $trips->payment_status : '';
+        $tripNew->payment_status    = isset($trips->payment_status) ? $trips->payment_status : PAYMENT_STATUS_PENDING;
         $tripNew->vehicle_type      = $trips->vehicle_type;
         $tripNew->price             = $trips->price;
         $tripNew->status            = TRIP_STATUS_NEW;
@@ -141,6 +141,8 @@ class TripController extends ApiBaseController
         }
         if($status == TRIP_STATUS_COMPLETED) {
             $trip->payment_status = PAYMENT_STATUS_SUCCESS;
+        } elseif(in_array($status, [TRIP_STATUS_CANCEL, TRIP_STATUS_REJECT])) {
+            $trip->payment_status = PAYMENT_STATUS_FAIL;
         }
         $trip->save();
 

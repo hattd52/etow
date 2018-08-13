@@ -35,7 +35,8 @@ class AuthController extends Controller
         $total_trip_completed = $this->trip->totalTripByStatus([TRIP_STATUS_COMPLETED]);
         $total_trip_rejected  = $this->trip->totalTripByStatus([TRIP_STATUS_REJECT]);
         $total_trip_canceled  = $this->trip->totalTripByStatus([TRIP_STATUS_CANCEL]);
-        $total_trip_ongoing   = $this->trip->totalTripByStatus([TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED]);
+        $total_trip_ongoing   = $this->trip->totalTripByStatus([TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, 
+            TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]);
         $total_driver_free    = $this->driver->getTotalDriverFree();
         $total_driver_offline = $this->driver->getTotalDriverOffline();
         $data = [
