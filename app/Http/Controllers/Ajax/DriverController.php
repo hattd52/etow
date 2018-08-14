@@ -93,7 +93,7 @@ class DriverController extends Controller
                 $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_NEW]),
                 $this->trip->totalTripByDriverAndStatus($driver->user_id, [ TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]),
                 //"<img src='assets/img/rating.png'  alt='' />",
-                $this->stars($driver->avgRate($driver->user_id)),
+                $this->stars(($driver->avgRate($driver->user_id))/2),
                 '<div style="margin:5px;" class="btn-group">
                     <button style="width: 105px" id="btnStatus" data-toggle="dropdown" class="btn '.$status_class.' dropdown-toggle" aria-expanded="false">
                         '.$status_label.'<span class="caret"></span></button>
@@ -121,31 +121,5 @@ class DriverController extends Controller
             'recordsFiltered' => $total,
             'data' => $data,
         ]);
-    }
-
-    public function stars($rate){
-        $stars = '';
-        for($i=1;$i<= 5;$i++){
-            if($rate > 0) {
-                $check = round(($i - $rate),1);
-                if($check <= 0) {
-                    $stars .= "<image src='".asset('assets/star.png')."'>&nbsp;</image>";
-                } else {
-                    if($check <= 1) {
-                        if($check == 0.5)
-                            $stars .= "<image src='".asset('assets/star-half-empty.png')."'>&nbsp;</image>";
-                        else
-                            $stars .= "<image '".asset('assets/star.png')."'>&nbsp;</image>";
-                    } else {
-                        $stars .= "<image src='".asset('assets/star-empty.png')."' >&nbsp;</image>";
-                    }
-                }
-            } else {
-                $stars .= "<image src='".asset('assets/star-empty.png')."' >&nbsp;</image>";
-            }
-        }
-
-        return $stars;
-    }
-
+    }    
 }

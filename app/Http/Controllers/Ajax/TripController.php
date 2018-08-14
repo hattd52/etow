@@ -192,29 +192,4 @@ class TripController extends Controller
         
         return json_encode($data);
     }
-
-    public function stars($rate){
-        $stars = '';
-        for($i=1;$i<= 5;$i++){
-            if($rate > 0) {
-                $check = round(($i - $rate),1);
-                if($check <= 0) {
-                    $stars .= "<image src='".asset('assets/star.png')."'>&nbsp;</image>";
-                } else {
-                    if($check <= 1) {
-                        if($check == 0.5)
-                            $stars .= "<image src='".asset('assets/star-half-empty.png')."'>&nbsp;</image>";
-                        else
-                            $stars .= "<image '".asset('assets/star.png')."'>&nbsp;</image>";
-                    } else {
-                        $stars .= "<image src='".asset('assets/star-empty.png')."' >&nbsp;</image>";
-                    }
-                }
-            } else {
-                $stars .= "<image src='".asset('assets/star-empty.png')."' >&nbsp;</image>";
-            }
-        }
-
-        return $stars;
-    }
 }
