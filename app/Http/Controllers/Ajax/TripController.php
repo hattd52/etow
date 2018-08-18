@@ -67,40 +67,68 @@ class TripController extends Controller
         $i = $request->input('start');
         foreach ($trips as $trip) {
             $i++;
-            $tmp = [
-                $i,
-                date('d-m-Y H:i A', strtotime($trip->created_at)),
-                '#'.$trip->id,
-                $trip->driverR ? $trip->driverR->driver_code : '',
-                ($trip->driverR && $trip->driverR->userR) ? $trip->driverR->userR->full_name : '',
-                ($trip->driverR && $trip->driverR->userR) ? $trip->driverR->userR->phone : '',
-                $trip->driverR ? $trip->driverR->vehicle_number : '',
-                $trip->driverR ? $trip->driverR->company_name : '',
-                $trip->userR ? $trip->userR->full_name : '',
-                $trip->userR ? $trip->userR->phone : '',
-                $trip->pick_up,
-                $trip->drop_off,
-                $trip->price.' AED',
-                $trip->is_schedule == STATUS_ACTIVE ? '<span style="color: orange">Schedule</span>' : '<span>Normal</span>',
-                $trip->pickup_date,
-                $this->getLabelStatus($trip->status, $trip->is_schedule),
-                $trip->note.'', // reason for cancel/reject
-                $trip->payment_status == PAYMENT_STATUS_PENDING ? '' :
-                    ($trip->payment_status == PAYMENT_STATUS_SUCCESS ? $trip->price.' AED' : ''), // paid by cash
-                '', // paid by card
-                $trip->payment_status == PAYMENT_STATUS_PENDING ? '<span style="color:red">Pending</span>' :
-                    ($trip->payment_status == PAYMENT_STATUS_SUCCESS ?
-                        '<span style="color:green">Paid</span>' : '<span style="color:red">Failed</span>'), // payment status
-                //"<img src='assets/img/rating.png'  alt='' />",
-                '<div class="rating">'.
-                    $this->stars($trip->rate/2).
-                '</div>'
-            ];
+            $tmp = $this->_getTmpComplete($i, $trip);            
             $data[] = $tmp;
         }
 
         $total = $this->trip->search($params, $order, $column, $offset, $limit, true);
         return $this->_getResponse($request, $total, $data);
+    }
+
+    public function _getTmpNormal($i, $trip) {
+        $tmp = [
+            $i,
+            date('d-m-Y H:i A', strtotime($trip->created_at)),
+            '#'.$trip->id,
+            $trip->driverR ? $trip->driverR->driver_code : '',
+            ($trip->driverR && $trip->driverR->userR) ? $trip->driverR->userR->full_name : '',
+            ($trip->driverR && $trip->driverR->userR) ? $trip->driverR->userR->phone : '',
+            $trip->driverR ? $trip->driverR->vehicle_number : '',
+            $trip->driverR ? $trip->driverR->company_name : '',
+            $trip->userR ? $trip->userR->full_name : '',
+            $trip->userR ? $trip->userR->phone : '',
+            $trip->pick_up,
+            $trip->drop_off,
+            $trip->price.' AED',
+            $trip->is_schedule == STATUS_ACTIVE ? '<span style="color: orange">Schedule</span>' : '<span>Normal</span>',
+            $trip->pickup_date,
+            $this->getLabelStatus($trip->status, $trip->is_schedule),
+            $trip->note.'', // reason for cancel/reject
+        ];
+        return $tmp;
+    }
+
+    public function _getTmpComplete($i, $trip){
+        $tmp = [
+            $i,
+            date('d-m-Y H:i A', strtotime($trip->created_at)),
+            '#'.$trip->id,
+            $trip->driverR ? $trip->driverR->driver_code : '',
+            ($trip->driverR && $trip->driverR->userR) ? $trip->driverR->userR->full_name : '',
+            ($trip->driverR && $trip->driverR->userR) ? $trip->driverR->userR->phone : '',
+            $trip->driverR ? $trip->driverR->vehicle_number : '',
+            $trip->driverR ? $trip->driverR->company_name : '',
+            $trip->userR ? $trip->userR->full_name : '',
+            $trip->userR ? $trip->userR->phone : '',
+            $trip->pick_up,
+            $trip->drop_off,
+            $trip->price.' AED',
+            $trip->is_schedule == STATUS_ACTIVE ? '<span style="color: orange">Schedule</span>' : '<span>Normal</span>',
+            $trip->pickup_date,
+            $this->getLabelStatus($trip->status, $trip->is_schedule),
+            $trip->note.'', // reason for cancel/reject
+            $trip->payment_status == PAYMENT_STATUS_PENDING ? '' :
+                ($trip->payment_status == PAYMENT_STATUS_SUCCESS ? $trip->price.' AED' : ''), // paid by cash
+            '', // paid by card
+            $trip->payment_status == PAYMENT_STATUS_PENDING ? '<span style="color:red">Pending</span>' :
+                ($trip->payment_status == PAYMENT_STATUS_SUCCESS ?
+                    '<span style="color:green">Paid</span>' : '<span style="color:red">Failed</span>'), // payment status
+            //"<img src='assets/img/rating.png'  alt='' />",
+            '<div class="rating">'.
+            $this->stars($trip->rate/2).
+            '</div>'
+        ];
+        return $tmp;
     }
 
     public function _getResponse($request, $total, $data) {

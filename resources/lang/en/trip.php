@@ -23,6 +23,7 @@
             'paid_card' => 'Paid Card',
             'payment_status' => 'Payment Status',
             'rating' => 'Rating',
+            'note' => 'Reason For Cancel/ Reject'
         ],
         'validator' => [
             'full_name' => ['required' => 'The driver name field is required.']

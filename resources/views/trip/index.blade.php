@@ -85,6 +85,13 @@ $type    = isset($type) ? $type : '';
         background: #f5f5f5 !important;
         color: #d0d0d0 !important;
     }
+    .th_hide {
+        display: none;
+    }
+
+    .th_show {
+        display: table-cell;
+    }
 </style>
 @endpush
 
@@ -169,6 +176,7 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnOngoing').on('click', function () {
+            memberTable.api().columns( [16, 17,18, 19, 20] ).visible( false );
             $('#type_search').val('<?= TRIP_ON_GOING ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
             $('#menu_select a span').removeClass('btn-selected');
@@ -177,6 +185,8 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnSchedule').on('click', function () {
+            memberTable.api().columns( [17,18, 19, 20] ).visible( true );
+            memberTable.api().columns( [16] ).visible( false );
             $('#type_search').val('<?= TRIP_SCHEDULE ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
             $('#menu_select a span').removeClass('btn-selected');
@@ -185,14 +195,19 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnComplete').on('click', function () {
+            memberTable.api().columns( [17, 18, 19, 20] ).visible( true );
+            memberTable.api().columns( [16] ).visible( false );
             $('#type_search').val('<?= TRIP_COMPLETE ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
             $('#menu_select a span').removeClass('btn-selected');
             $(this).find('span').addClass('btn-selected');
+            $('#table-trips').find('.th_hide').removeClass('th_hide').addClass('th_show');
             memberTable.fnDraw();
         });
 
         $('#btnReject').on('click', function () {
+            memberTable.api().columns( [17, 18, 19, 20] ).visible( false );
+            memberTable.api().columns( [16] ).visible( true );
             $('#type_search').val('<?= TRIP_REJECT ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
             $('#menu_select a span').removeClass('btn-selected');
@@ -201,6 +216,8 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnCancel').on('click', function () {
+            memberTable.api().columns( [17, 18, 19, 20] ).visible( false );
+            memberTable.api().columns( [16] ).visible( true );
             $('#type_search').val('<?= TRIP_CANCEL ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
             $('#menu_select a span').removeClass('btn-selected');
@@ -209,6 +226,7 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnAll').on('click', function () {
+            memberTable.api().columns( [16, 17,18, 19, 20] ).visible( true );
             $('#type_search').val('');
             $('#btnAll span').removeClass('trips_but_all').addClass('trips_but');
             $('#menu_select a span').removeClass('btn-selected');
@@ -217,13 +235,16 @@ $type    = isset($type) ? $type : '';
 
         var database = firebase.database();
         var tripRef = database.ref('trip');
-        tripRef.on("child_added", function(snap) {
+        tripRef.once("child_added", function(snap) {
+            console.log('add');
             memberTable.fnDraw();
         });
-        tripRef.on("child_changed", function(snap) {
+        tripRef.once("child_changed", function(snap) {
+            console.log('change');
             memberTable.fnDraw();
         });
-        tripRef.on("child_removed", function(snap) {
+        tripRef.once("child_removed", function(snap) {
+            console.log('remove');
             memberTable.fnDraw();
         });
     });

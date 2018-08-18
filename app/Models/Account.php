@@ -46,6 +46,28 @@ class Account extends Authenticatable
         return $this->hasMany(Trip::class, 'user_id');
     }
 
+    protected $appends = ['is_free'];
+    public function getIsFreeAttribute()
+    {
+        return $this->checkDriverIsFree();
+    }
+
+    public function checkDriverIsFree() {
+        $query  = Trip::query()->where('driver_id', $this->id);
+        $data = $query->get();
+        if(empty($data))
+            return 1;
+
+        $is_free = 0;
+        foreach($data as $item) {
+            if($item->status == TRIP_STATUS_COMPLETED)
+                $is_free = 1;
+            else
+                $is_free = 0;
+        }
+        return $is_free;
+    }
+
     public static function checkTokenExist($token) {
         $query  = self::query()->where('token', $token);
         $data = $query->first();
