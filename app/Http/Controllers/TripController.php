@@ -38,14 +38,14 @@ class TripController extends Controller
     public function typeByUser($user_id, $type)
     {
         $total = $this->trip->getTotalTrip();
-        $by    = 'users';
+        $by    = TRIP_BY_USER;
         return view('trip.index', compact('total', 'user_id', 'type', 'by'));
     }
 
     public function typeByDriver($driver_id, $type)
     {
         $total = $this->trip->getTotalTrip();
-        $by    = 'drivers';
+        $by    = TRIP_BY_DRIVER;
         return view('trip.index', compact('total', 'driver_id', 'type', 'by'));
     }
 

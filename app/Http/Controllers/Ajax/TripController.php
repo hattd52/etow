@@ -14,6 +14,7 @@ use App\Models\Account;
 use App\Models\Driver;
 use App\Models\Otp;
 use App\Models\Trip;
+use App\Models\TripPaid;
 use App\Models\UserToken;
 use App\Transformers\Api\AccountTransformer;
 use App\Transformers\Api\DriverTransformer;
@@ -44,6 +45,7 @@ class TripController extends Controller
         $end_date   = $request->input('end_date');
         $user_id    = $request->input('user_id');
         $driver_id  = $request->input('driver_id');
+        $payment_driver = $request->input('payment_driver');
 
         $orderName = $request->input('order');
         if ($orderName) {
@@ -54,26 +56,51 @@ class TripController extends Controller
             $column = null;
         }
 
-        $params = compact('key', 'type', 'start_date', 'end_date', 'user_id', 'driver_id');
+        $params = compact('key', 'type', 'start_date', 'end_date', 'user_id', 'driver_id', 'payment_driver');
         $offset = $request->input('start');
         $limit  = $request->input('length');
         $data   = [];
         $total  = 0;
 
         $trips = $this->trip->search($params, $order, $column, $offset, $limit, false);
+        $total_cash = $total_card = $total_paid_cash = $total_paid_card = $total_pay = $total_collect = 0;
         if($trips->isEmpty() == true){
-            return $this->_getResponse($request, $total, $data);
+            return $this->_getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
+                $total_pay, $total_collect);
         }
 
         $i = $request->input('start');
         foreach ($trips as $trip) {
             $i++;
-            $tmp = $this->_getTmpComplete($i, $trip);            
+            $tmp = $this->_getTmpComplete($i, $trip);
+            if($payment_driver && $payment_driver === PAYMENT_DRIVER_PAID) {
+                $settlement = '<p class="label label-success">Paid</p>
+                    <p>'.date('H:i A, d,m,Y',strtotime($trip->tripPaidR->created_at)).'</p>';
+            } else {
+                $settlement = '<a id="btnPaid" class="btn btn-success" onclick="paidTrip('.$trip->id.')">Paid</a>';
+            }
+            array_push($tmp, $settlement);
             $data[] = $tmp;
+
+            if($trip->payment_method === PAYMENT_METHOD_CASH) {
+                $total_cash += $trip->price;
+                if($trip->is_settlement) {
+                    $total_paid_cash += $trip->price;
+                }
+            } else {
+                $total_card += $trip->price;
+                if($trip->is_settlement) {
+                    $total_paid_card += $trip->price;
+                }
+            }
         }
+        
+        $total_pay     = (($total_cash + $total_card) - ($total_paid_cash + $total_paid_card));
+        $total_collect = $total_paid_cash + $total_paid_card;
 
         $total = $this->trip->search($params, $order, $column, $offset, $limit, true);
-        return $this->_getResponse($request, $total, $data);
+        return $this->_getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
+            $total_pay, $total_collect);
     }
 
     public function _getTmpNormal($i, $trip) {
@@ -126,18 +153,25 @@ class TripController extends Controller
                     '<span style="color:green">Paid</span>' : '<span style="color:red">Failed</span>'), // payment status
             //"<img src='assets/img/rating.png'  alt='' />",
             '<div class="rating">'.
-            $this->stars($trip->rate/2).
+                $this->stars($trip->rate/2).
             '</div>'
         ];
         return $tmp;
     }
 
-    public function _getResponse($request, $total, $data) {
+    public function _getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
+        $total_pay, $total_collect) {
         return response()->json([
             'draw' => $request->input('draw'),
             "recordsTotal" => $total,
             'recordsFiltered' => $total,
             'data' => $data,
+            'total_cash' => $total_cash,
+            'total_card' => $total_card,
+            'total_paid_cash' => $total_paid_cash,
+            'total_paid_card' => $total_paid_card,
+            'total_pay' => $total_pay,
+            'total_collect' => $total_collect
         ]);
     }
 
@@ -220,5 +254,26 @@ class TripController extends Controller
         }
         
         return json_encode($data);
+    }
+
+    public function paidTrip(Request $request) {
+        $trip_id = $request->get('trip_id');
+        if(!$trip_id)
+            return 0;
+
+        $trip = Trip::find($trip_id);
+        if(empty($trip))
+            return 0;
+
+        $dataPaid = [
+            'trip_id' => $trip_id,
+            'price'   => $trip->price,
+            'created_at' => date('Y-m-d H:i:s', time()),
+            'updated_at' => date('Y-m-d H:i:s', time())           
+        ];
+        TripPaid::insertData($dataPaid);
+        Trip::updateData(['id' => $trip_id],['is_settlement' => PAID]);
+
+        return 1;
     }
 }

@@ -20,7 +20,7 @@ class Trip extends Model
     protected $fillable = [
         'user_id', 'driver_id', 'pick_up', 'drop_off', 'pickup_date', 'vehicle_type', 'price', 'status',
         'created_at', 'updated_at', 'is_schedule', 'note', 'pickup_latitude', 'pickup_longitude', 'dropoff_latitude',
-        'dropoff_longitude', 'payment_type', 'current_latitude', 'current_longitude', 'payment_status', 'rate'
+        'dropoff_longitude', 'payment_type', 'current_latitude', 'current_longitude', 'payment_status', 'rate', 'is_settlement'
     ];
     
     protected $hidden = [
@@ -34,6 +34,10 @@ class Trip extends Model
     public function driverR() {
         return $this->belongsTo(Driver::class, 'driver_id', 'user_id');
     }
+    
+    public function tripPaidR() {
+        return $this->belongsTo(TripPaid::class, 'id', 'trip_id');
+    }    
     
     protected $appends = ['user', 'driver', 'status_schedule'];
         
@@ -194,6 +198,13 @@ class Trip extends Model
         }
         if (isset($params['driver_id'])) {
             $query->where('trip.driver_id', $params['driver_id']);
+            if(isset($params['payment_driver'])) {
+                $paymentDriver = $params['payment_driver'];
+                if($paymentDriver === PAYMENT_DRIVER_PENDING)
+                    $query->where('trip.is_settlement', UNPAID);
+                else
+                    $query->where('trip.is_settlement', PAID);
+            }
         }
 
         return $query;

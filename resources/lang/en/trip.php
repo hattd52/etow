@@ -23,7 +23,8 @@
             'paid_card' => 'Paid Card',
             'payment_status' => 'Payment Status',
             'rating' => 'Rating',
-            'note' => 'Reason For Cancel/ Reject'
+            'note' => 'Reason For Cancel/ Reject',
+            'is_settlement' => 'Internal Settlement Status'
         ],
         'validator' => [
             'full_name' => ['required' => 'The driver name field is required.']
@@ -37,5 +38,7 @@
             'update status fail' => 'Update status failed',
             'destroy success' => 'Delete driver successfully',
             'destroy fail' => 'Delete driver failed',            
+            'paid trip fail' => 'Paid Trip failed',            
+            'paid trip success' => 'Paid Trip successfully',            
         ]
     ];

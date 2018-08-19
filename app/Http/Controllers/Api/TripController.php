@@ -183,6 +183,7 @@ class TripController extends ApiBaseController
         $data = [];
         list($pick_up, $drop_off, $pickup_date, $vehicle_type, $price, $status, $trip_id) = $this->_getParams($request);
         $payment_status = $request->get('payment_status');
+        $payment_type   = $request->get('payment_type');
         if(!$trip_id || !$payment_status) {
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
@@ -192,11 +193,11 @@ class TripController extends ApiBaseController
         /** @var Trip $trip */
         $trip      = Trip::find($trip_id);
         if(!empty($trip)) {
+            $trip->payment_type  = $payment_type;
             $trip->payment_status  = $payment_status;
             $trip->save();
         }
 
-        $this->status  = STATUS_SUCCESS;
         $this->message = 'update location trip successfully';
 
         next:

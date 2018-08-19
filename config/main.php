@@ -22,6 +22,20 @@ const
     PAYMENT_STATUS_FAIL = 'fail';
 
 const
+    TRIP_BY_USER = 'users',
+    TRIP_BY_DRIVER = 'drivers';
+
+const
+    PAYMENT_DRIVER_PENDING = 'pending',
+    PAYMENT_DRIVER_PAID = 'paid';
+const 
+    PAID = 1,
+    UNPAID = 0;
+const
+    PAYMENT_METHOD_CASH = 'cash',
+    PAYMENT_METHOD_CARD = 'card'; 
+
+const
     GOOGLE_API_KEY = 'AIzaSyAIfGZf9EAxX7rQ7nam9xwtboW74pGZU-o';
 
 return [

@@ -1,7 +1,8 @@
 <?php
-$user_id = isset($user_id) ? $user_id : '';
+$user_id   = isset($user_id) ? $user_id : '';
 $driver_id = isset($driver_id) ? $driver_id : '';
-$type    = isset($type) ? $type : '';
+$type      = isset($type) ? $type : '';
+$by        = isset($by) ? $by : '';
 ?>
 
 @extends('layouts.main')
@@ -28,12 +29,34 @@ $type    = isset($type) ? $type : '';
             </div>
 
             <div class="panel panel-default">
-                <div class="page_sort">
-                    <div class="search_n">Search: <input name="key" type="search" class="input_320" placeholder="Enter Trip No/ Driver Name / ID / Company Name"></div>
-                    <div class="date_n"><a id="btnSort" class="btn btn-success">Sort</a></div>
-                    <div class="date_n">to: <input name="end_date" type="date" class="input_150" ></div>
-                    <div class="date_n">Sort: <input name="start_date" type="date" class="input_150" ></div>
+                @if($by && $by === TRIP_BY_DRIVER)
+                <div class="col-sm-12" style="margin-top:20px" id="menu_select_payment">
+                    <a id="btnPendingPayment" style="cursor: default; text-decoration: none;">
+                        <div class="btn btn-default btn-selected-payment" style="border-radius: 4px; font-weight: bold;
+                            padding: 4px 12px 4px 12px; background: #20b893; color: #fff;">
+                            <span class="">Pending Trips Payment</span>
+                        </div>
+                    </a>
+
+                    <a id="btnPaidPayment" style="cursor: pointer; text-decoration: none;">
+                        <div class="btn btn-success" style="border-radius: 4px; font-weight: bold;
+                            padding: 4px 12px 4px 12px; background: #20b893; color: #fff;">
+                            <span class="">Paid Trips Payment</span>
+                        </div>
+                    </a>
                 </div>
+                <input type="hidden" id="payment_driver" value="<?= PAYMENT_DRIVER_PENDING ?>" />
+                @endif
+
+                <div class="col-sm-12">
+                    <div class="page_sort">
+                        <div class="search_n">Search: <input name="key" type="search" class="input_320" placeholder="Enter Trip No/ Driver Name / ID / Company Name"></div>
+                        <div class="date_n"><a id="btnSort" class="btn btn-success">Sort</a></div>
+                        <div class="date_n">to: <input name="end_date" type="date" class="input_150" ></div>
+                        <div class="date_n">Sort: <input name="start_date" type="date" class="input_150" ></div>
+                    </div>
+                </div>
+
                 <div class="clearfix"></div>
                 <div class="panel-body">
                     <div class="table-responsive">
@@ -61,12 +84,44 @@ $type    = isset($type) ? $type : '';
                                     <th class="cl_min-100" data-sortable="false">{{ trans('trip.table.paid_card') }}</th>
                                     <th class="cl_min-100" data-sortable="false">{{ trans('trip.table.payment_status') }}</th>
                                     <th class="cl_min-100" data-sortable="false">{{ trans('trip.table.rating') }}</th>
+                                    <th class="cl_min-160" data-sortable="false">{{ trans('trip.table.is_settlement') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody">
                             </tbody>
                         </table>
                     </div>
+
+                    @if($by === TRIP_BY_DRIVER)
+                    <div class="col-sm-12" style="margin-top: 20px">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-4">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td>Total</td>
+                                    <td><span id="total_cash"></span></td>
+                                    <td><span id="total_card"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Settlement</td>
+                                    <td><span id="total_paid_cash"></span></td>
+                                    <td><span id="total_paid_card"></span></td>
+                                </tr>
+                                <tr id="pay_money">
+                                    <td>Pay</td>
+                                    <td><span id="total_pay" style="font-weight: bold; color: red"></span></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="collect_money" style="display: none">
+                                    <td>Collect</td>
+                                    <td><span id="total_collect"></span></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-sm-4"></div>
+                    </div>
+                    @endif
                 </div>
             </div>
             <!--End Advanced Tables -->
@@ -86,12 +141,12 @@ $type    = isset($type) ? $type : '';
         background: #f5f5f5 !important;
         color: #d0d0d0 !important;
     }
-    .th_hide {
-        display: none;
-    }
-
-    .th_show {
-        display: table-cell;
+    .btn-selected-payment {
+        background: #e2e2e2 !important;
+        color: #888 !important;
+        pointer-events: none;
+        cursor: default !important;
+        border-color: #e2e2e2 !important;
     }
 </style>
 @endpush
@@ -146,6 +201,7 @@ $type    = isset($type) ? $type : '';
                     d.end_date = $( "input[name='end_date']" ).val();
                     d.user_id = '<?= $user_id ?>';
                     d.driver_id = '<?= $driver_id ?>';
+                    d.payment_driver = $( "#payment_driver" ).val();
                 }
             },
             "drawCallback": function(settings) {
@@ -161,6 +217,26 @@ $type    = isset($type) ? $type : '';
                     $('#text_reject').html('Rejected Trips ('+ result.recordsTotal +')');
                 } else if(type == '<?= TRIP_CANCEL ?>') {
                     $('#text_cancel').html('Canceled Trips ('+ result.recordsTotal +')');
+                }
+
+                var by = '<?= $by ?>';
+                var payment_driver = $( "#payment_driver" ).val();
+                if(by && by == '{{ TRIP_BY_DRIVER }}') {
+                    console.log(settings.json);
+                    $('#total_cash').html(settings.json.total_cash + ' AED');
+                    $('#total_card').html(settings.json.total_card + ' AED');
+                    $('#total_paid_cash').html(settings.json.total_paid_cash + ' AED');
+                    $('#total_paid_card').html(settings.json.total_paid_card + ' AED');
+                    $('#total_pay').html(settings.json.total_pay + ' AED');
+                    $('#total_collect').html(settings.json.total_collect + ' AED');
+
+                    if(payment_driver == '{{ PAYMENT_DRIVER_PENDING }}') {
+                        $('#pay_money').show();
+                        $('#collect_money').hide();
+                    } else {
+                        $('#pay_money').hide();
+                        $('#collect_money').show();
+                    }
                 }
             },
             "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
@@ -178,7 +254,7 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnOngoing').on('click', function () {
-            memberTable.api().columns( [16, 17,18, 19, 20] ).visible( false );
+            memberTable.api().columns( [16, 17,18, 19, 20, 21] ).visible( false );
             $('#type_search').val('<?= TRIP_ON_GOING ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
             $('#menu_select a span').removeClass('btn-selected');
@@ -188,7 +264,7 @@ $type    = isset($type) ? $type : '';
 
         $('#btnSchedule').on('click', function () {
             memberTable.api().columns( [17,18, 19, 20] ).visible( true );
-            memberTable.api().columns( [16] ).visible( false );
+            memberTable.api().columns( [16, 21] ).visible( false );
             $('#type_search').val('<?= TRIP_SCHEDULE ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
             $('#menu_select a span').removeClass('btn-selected');
@@ -197,7 +273,7 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnComplete').on('click', function () {
-            memberTable.api().columns( [17, 18, 19, 20] ).visible( true );
+            memberTable.api().columns( [17, 18, 19, 20, 21] ).visible( true );
             memberTable.api().columns( [16] ).visible( false );
             $('#type_search').val('<?= TRIP_COMPLETE ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
@@ -208,7 +284,7 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnReject').on('click', function () {
-            memberTable.api().columns( [17, 18, 19, 20] ).visible( false );
+            memberTable.api().columns( [17, 18, 19, 20, 21] ).visible( false );
             memberTable.api().columns( [16] ).visible( true );
             $('#type_search').val('<?= TRIP_REJECT ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
@@ -218,7 +294,7 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnCancel').on('click', function () {
-            memberTable.api().columns( [17, 18, 19, 20] ).visible( false );
+            memberTable.api().columns( [17, 18, 19, 20, 21] ).visible( false );
             memberTable.api().columns( [16] ).visible( true );
             $('#type_search').val('<?= TRIP_CANCEL ?>');
             $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
@@ -228,10 +304,26 @@ $type    = isset($type) ? $type : '';
         });
 
         $('#btnAll').on('click', function () {
-            memberTable.api().columns( [16, 17,18, 19, 20] ).visible( true );
+            memberTable.api().columns( [16, 17,18, 19, 20, 21] ).visible( true );
             $('#type_search').val('');
             $('#btnAll span').removeClass('trips_but_all').addClass('trips_but');
             $('#menu_select a span').removeClass('btn-selected');
+            memberTable.fnDraw();
+        });
+
+        $('#btnPendingPayment').on('click', function () {
+            memberTable.api().columns( [16, 17,18, 19, 20, 21] ).visible( true );
+            $('#payment_driver').val('<?= PAYMENT_DRIVER_PENDING ?>');
+            $('#menu_select_payment a div').removeClass('btn-selected-payment');
+            $('#btnPendingPayment div').addClass('btn-selected-payment');
+            memberTable.fnDraw();
+        });
+
+        $('#btnPaidPayment').on('click', function () {
+            memberTable.api().columns( [16, 17,18, 19, 20, 21] ).visible( true );
+            $('#payment_driver').val('<?= PAYMENT_DRIVER_PAID ?>');
+            $('#menu_select_payment a div').removeClass('btn-selected-payment');
+            $('#btnPaidPayment div').addClass('btn-selected-payment');
             memberTable.fnDraw();
         });
 
@@ -249,6 +341,31 @@ $type    = isset($type) ? $type : '';
             console.log('remove');
             memberTable.fnDraw();
         });
+
+        window.paidTrip = function(trip_id) {
+            $('#btnPaid').html('<i class="fa fa-spinner fa-spin"></i>');
+            $('#btnPaid').attr('disabled',true);
+            $.ajax({
+                type: "POST",
+                url: '{{ route('ajax.trip.paid_for_driver') }}',
+                data:{
+                    "_token": "{{ csrf_token() }}",
+                    "trip_id": trip_id
+                },
+                success: function(resultData){
+                    //console.log(resultData);return;
+                    $('#btnPaid').html('Paid');
+                    $('#btnPaid').attr('disabled',false);
+
+                    if(!resultData){
+                        alert('<?= trans('trip.message.paid trip fail') ?>');
+                    } else {
+                        alert('<?= trans('trip.message.paid trip success') ?>');
+                        memberTable.fnDraw();
+                    }
+                }
+            });
+        }
     });
 </script>
 @endpush
