@@ -72,8 +72,13 @@ class DriverController extends Controller
             $i++;
             $tmp = [
                 $i,
-                $driver->driver_code,
-                $driver->userR ? $driver->userR->full_name : '',
+                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_COMPLETE]).'" target="_blank" class="status_green status_txtsize">'.
+                    $driver->driver_code.
+                '</span></a>',
+                $driver->userR ?
+                    ('<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_COMPLETE]).'" target="_blank" class="status_green status_txtsize">'.
+                        $driver->userR->full_name.
+                    '</span></a>') : '',
                 ($driver->userR && $driver->userR->avatar) ?
                 "<img src='".asset('upload/account/'.$driver->userR->avatar)."' class='img-responsive' />" : '',
                 $driver->userR ? $driver->userR->email : '',
@@ -87,11 +92,21 @@ class DriverController extends Controller
                 ($driver->mulkiya) ?
                     "<img src='".asset('upload/driver/'.$driver->mulkiya)."' class='img-responsive' />" : '',
                 "<span class='label $driver_status_class'>".$driver_status_label."</span>",
-                $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_COMPLETED]),
-                $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_CANCEL]),
-                $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_REJECT]),
-                $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_NEW]),
-                $this->trip->totalTripByDriverAndStatus($driver->user_id, [ TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]),
+                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_COMPLETE]).'" target="_blank" class="btn btn-success">'.
+                    $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_COMPLETED]).
+                '</span></a>',
+                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_CANCEL]).'" target="_blank" class="btn btn-danger">'.
+                    $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_CANCEL]).
+                '</span></a>',
+                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_REJECT]).'" target="_blank" class="btn btn-danger">'.
+                    $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_REJECT]).
+                '</span></a>',
+                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_SCHEDULE]).'" target="_blank" class="btn btn-primary">'.
+                    $this->trip->totalTripByDriverAndStatus($driver->user_id, [TRIP_STATUS_NEW]).
+                '</span></a>',
+                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_ON_GOING]).'" target="_blank" class="btn btn-warning">'.
+                    $this->trip->totalTripByDriverAndStatus($driver->user_id, [ TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]).
+                '</span></a>',
                 //"<img src='assets/img/rating.png'  alt='' />",
                 $this->stars(($driver->avgRate($driver->user_id))/2),
                 '<div style="margin:5px;" class="btn-group">

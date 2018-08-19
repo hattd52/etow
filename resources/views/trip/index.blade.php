@@ -1,5 +1,6 @@
 <?php
 $user_id = isset($user_id) ? $user_id : '';
+$driver_id = isset($driver_id) ? $driver_id : '';
 $type    = isset($type) ? $type : '';
 ?>
 
@@ -144,6 +145,7 @@ $type    = isset($type) ? $type : '';
                     d.start_date = $( "input[name='start_date']" ).val();
                     d.end_date = $( "input[name='end_date']" ).val();
                     d.user_id = '<?= $user_id ?>';
+                    d.driver_id = '<?= $driver_id ?>';
                 }
             },
             "drawCallback": function(settings) {

@@ -64,7 +64,7 @@
                 <li><a class="{{ $router === 'dashboard' ? 'active-menu' : '' }}"  href="{{ route('dashboard') }}"><i class="fa fa-calendar"></i> Dashboard</a></li>
                 <li><a class="{{ $router === 'user.index' ? 'active-menu' : '' }}" href="{{ route('user.index') }}"><i class="fa fa-users"></i> Users</a></li>
                 <li><a class="{{ in_array($router, ['driver.index', 'driver.create', 'driver.edit']) ? 'active-menu' : '' }}" href="{{ route('driver.index') }}"><i class="fa fa-star"></i> Drivers</a></li>
-                <li><a class="{{ in_array($router, ['trip.index', 'trip.by_user', 'trip.by_user_type']) ? 'active-menu' : '' }}" href="{{ route('trip.index') }}"><i class="fa fa-truck"> </i> Trips</a></li>
+                <li><a class="{{ in_array($router, ['trip.index', 'trip.by_user', 'trip.by_user_type', 'trip.by_driver_type']) ? 'active-menu' : '' }}" href="{{ route('trip.index') }}"><i class="fa fa-truck"> </i> Trips</a></li>
                 <li><a class="{{ in_array($router, ['setting.index', 'setting.update_price']) ? 'active-menu' : '' }}" href="{{ route('setting.index') }}"><i class="fa fa-cogs"></i> Settings</a></li>
                 <li> <a class="{{ $router === 'feedback.index' ? 'active-menu' : '' }}" href="{{ route('feedback.index') }}"><i class="fa fa-atfa fa-envelope"></i> Feedback</a></li>
             </ul>

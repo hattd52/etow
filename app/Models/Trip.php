@@ -189,9 +189,11 @@ class Trip extends Model
                     break;
             }
         }
-
         if (isset($params['user_id'])) {
             $query->where('trip.user_id', $params['user_id']);
+        }
+        if (isset($params['driver_id'])) {
+            $query->where('trip.driver_id', $params['driver_id']);
         }
 
         return $query;

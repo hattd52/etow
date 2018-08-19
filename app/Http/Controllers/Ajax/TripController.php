@@ -43,6 +43,7 @@ class TripController extends Controller
         $start_date = $request->input('start_date');
         $end_date   = $request->input('end_date');
         $user_id    = $request->input('user_id');
+        $driver_id  = $request->input('driver_id');
 
         $orderName = $request->input('order');
         if ($orderName) {
@@ -53,7 +54,7 @@ class TripController extends Controller
             $column = null;
         }
 
-        $params = compact('key', 'type', 'start_date', 'end_date', 'user_id');
+        $params = compact('key', 'type', 'start_date', 'end_date', 'user_id', 'driver_id');
         $offset = $request->input('start');
         $limit  = $request->input('length');
         $data   = [];
@@ -150,7 +151,7 @@ class TripController extends Controller
                 return '<span class="label label-danger" style="background: #c40505 !important;">Canceled</span>' ;
                 break;
             case TRIP_STATUS_REJECT:
-                return '<span class="label label-danger" style="background: #ff0000 !important;">Canceled</span>' ;
+                return '<span class="label label-danger" style="background: #ff0000 !important;">Rejected</span>' ;
                 break;
             case TRIP_STATUS_ACCEPT:
                 return '<span class="label label-info" style="">Accept</span>' ;

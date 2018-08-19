@@ -14,6 +14,7 @@
                 'index' => 'Trips',
                 'by_user' => 'Trips',
                 'by_user_type' => 'Trips',
+                'by_driver_type' => 'Trips',
             ],
             'setting' => [
                 'index' => 'Settings',

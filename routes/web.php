@@ -121,6 +121,11 @@ Route::group(['middleware' => ['auth']], function () {
         'uses' => 'Ajax\TripController@getMarker',
         //'middleware' => 'can:employee.employees.index'
     ]);
+    Route::get('/drivers/trip/{driver_id}/{type}', [
+        'as' => 'trip.by_driver_type',
+        'uses' => 'TripController@typeByDriver',
+        //'middleware' => 'can:employee.employees.index'
+    ]);
 
     //==================== Setting =====================
     Route::get('/settings', [
