@@ -28,9 +28,11 @@
         'modal' => [
             'title' => 'Confirmation',
             'confirmation-message' => 'Are you sure you want to delete this record?',
+            'forgot title' => 'Forgot Password'
         ],
         'button' => [
             'delete' => 'Delete',
-            'cancel' => 'Cancel'
+            'cancel' => 'Cancel',
+            'reset password' => 'Reset Password'
         ]
     ];

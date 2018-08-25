@@ -244,6 +244,7 @@ $by        = isset($by) ? $by : '';
                 "url": '{{ asset("assets/js/dataTables/lang/en.json") }}'
             }
         });
+        memberTable.dataTable.ext.errMode = 'throw';
 
         $( "input[name='key']" ).on('keyup', function (){
             $('#table-trips').dataTable().fnFilter(this.value);

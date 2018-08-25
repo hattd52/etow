@@ -35,6 +35,9 @@ return [
     'messages' => [
         'successfully logged in' => 'Successfully logged in.',
         'failed logged in' => 'Email or password incorrect.',
-        'not permission' => 'You are not permission login to Admin Site.',
+        'not permission' => 'Email or password incorrect.',
+        'email incorrect' => 'Email is incorrect. Please try again.',
+        'forgot successfully' => 'Forgot password successfully. Please check email to reset password.',
+        'reset successfully' => 'Reset password successfully.',
     ]
 ];

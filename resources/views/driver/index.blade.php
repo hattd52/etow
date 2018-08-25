@@ -130,6 +130,7 @@
                 "url": '{{ asset("assets/js/dataTables/lang/en.json") }}'
             }
         });
+        memberTable.dataTable.ext.errMode = 'throw';
 
         $( "input[name='key']" ).on('keyup', function (){
             $('#table-drivers').dataTable().fnFilter(this.value);

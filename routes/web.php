@@ -21,7 +21,10 @@ Route::get('/get-avatar/{fileName}', 'Controller@getAvatar');
 Route::get('login', ['as' => 'login', 'uses' => 'AuthController@getLogin']);
 Route::post('login', 'AuthController@postLogin');
 #forgot
-Route::get('reset', ['as' => 'reset', 'uses' => 'AuthController@getReset']);
+Route::get('forgot-password', ['as' => 'forgot-password', 'uses' => 'AuthController@forgotPassword']);
+Route::post('forgot', ['as' => 'forgot', 'uses' => 'AuthController@postForgotPassword']);
+Route::get('reset-password', ['as' => 'reset-password', 'uses' => 'AuthController@getResetPassword']);
+Route::post('reset', ['as' => 'reset', 'uses' => 'AuthController@postResetPassword']);
 
 Route::group(['middleware' => ['auth']], function () {
     # index

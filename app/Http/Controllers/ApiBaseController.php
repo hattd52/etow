@@ -152,11 +152,14 @@ class ApiBaseController extends Controller
             );
         } catch (RestException $exception) {
             $message = $exception->getMessage();
+            $res     = ['status' => STATUS_ERROR, 'message' => $message, 'data' => ""];
             //dd($message);
             //$this->message = $message;
             //echo $this->ResponseData(); die;
+            //http_response_code(SEND_OTP_ERROR);
             header('Content-Type: application/json');
-            echo json_encode(['status' => STATUS_ERROR, 'message' => $message, 'data' => ""], SEND_OTP_ERROR); die;
+            http_response_code(SEND_OTP_ERROR);
+            echo json_encode($res); exit;
         }
     }
     

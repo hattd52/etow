@@ -8,8 +8,10 @@ use App\Models\Trip;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Request;
 use Tymon\JWTAuth\JWTAuth;
 
 class AuthController extends Controller
@@ -115,23 +117,70 @@ class AuthController extends Controller
         return redirect()->route('register')
             ->withError(trans('user::messages.there was an error with the activation'));
     }
-
-    public function getReset()
-    {
-        return view('user::public.reset.begin');
+    
+    public function forgotPassword(Request $request) {        
+        return view('auth.forgot');
     }
 
-    public function postReset(ResetRequest $request)
-    {
-        try {
-            app(UserResetter::class)->startReset($request->all());
-        } catch (UserNotFoundException $e) {
-            return redirect()->back()->withInput()
-                ->withError(trans('user::messages.no user found'));
+    public function postForgotPassword(Request $request) {
+        $email = $request->get('email');
+        $check = Account::checkEmailAdminExist($email);
+        if(empty($check)) {
+            $msg = trans('auth.messages.email incorrect');
+            return back()->with('error', $msg);
         }
 
-        return redirect()->route('reset')
-            ->withSuccess(trans('user::messages.check email to reset password'));
+        $token = md5($email.rand(0,1000).time());
+        //Account::updateData(['email', $email],['reset_token' => $token]);
+        $check->reset_token = $token;
+        if($check->save()) {
+            $dataSend = [
+                'from'         => env('MAIL_FROM_ADDRESS', 'fruity.tester@gmail.com'),
+                'sendName'     => env('MAIL_FROM_NAME', 'eTow system'),
+                'subject'      => 'Forgot password.',
+                'email'        => $email,
+                'name'         => $check->full_name,
+                'reset_token'  => $check->reset_token,
+                'url_reset'    => route('reset-password'),
+            ];
+            $template = 'forgot_password';
+            $this->sendMail($dataSend, $template);
+        }        
+        
+        return redirect()->route('forgot-password')
+            ->withSuccess(trans('auth.messages.forgot successfully'));
+    }
+
+    public function getResetPassword()
+    {
+        return view('auth.reset');
+    }
+
+    public function postResetPassword(Request $request)
+    {
+        $token            = trim($request->get('token'));
+        $new_password     = trim($request->get('new_password'));
+        $confirm_password = trim($request->get('confirm_password'));
+
+        $check = Account::checkResetTokenExist($token);
+        if(empty($check)) {
+            $msg = 'Token mismatch.';
+            return back()->with('error', $msg);
+        }
+
+        if($new_password !== $confirm_password) {
+            $msg = 'New password and confirm password must be the same.';
+            return back()->with('error', $msg);
+        }
+
+        $check->password = Hash::make($new_password);
+        if($check->save()) {
+            $check->reset_token = '';
+            $check->save();
+        }
+
+        return redirect()->route('login')
+            ->withSuccess(trans('auth.messages.forgot successfully'));
     }
 
     public function getResetComplete()
@@ -161,5 +210,22 @@ class AuthController extends Controller
 
         return redirect()->route('login')
             ->withSuccess(trans('user::messages.password reset'));
+    }
+
+    public static function sendMail($data, $template)
+    {
+        $send = \Mail::send('emails.'.$template, ['data' => $data], function ($message) use ($data) {
+            $message->from($data['from'], $data['sendName'])
+                ->subject($data['subject'])
+                ->to($data['email']);
+            if(!empty($data['attach'])) {
+                $message->attach($data['attach']);
+            }
+            if(!empty($data['bcc'])) {
+                $message->bcc($data['bcc']);
+            }
+        });
+
+        return $send;
     }
 }

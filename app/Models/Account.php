@@ -25,7 +25,7 @@ class Account extends Authenticatable
      */
     protected $fillable = [
         'full_name', 'email', 'password', 'phone', 'status', 'created_at', 'updated_at',
-        'token', 'type', 'remember_token', 'avatar'
+        'token', 'type', 'remember_token', 'avatar', 'reset_token'
     ];
     public $timestamps = false;
 
@@ -35,7 +35,7 @@ class Account extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'token'
+        'password', 'remember_token', 'token', 'reset_token'
     ];
 
     public function driverR() {
@@ -46,10 +46,14 @@ class Account extends Authenticatable
         return $this->hasMany(Trip::class, 'user_id');
     }
 
-    protected $appends = ['is_free'];
+    protected $appends = ['is_free', 'link_avatar'];
     public function getIsFreeAttribute()
     {
         return $this->checkDriverIsFree();
+    }
+    public function getLinkAvatarAttribute()
+    {
+        return $this->avatar ? asset('upload/driver/'.$this->avatar) : '';
     }
 
     public function checkDriverIsFree() {
@@ -76,6 +80,18 @@ class Account extends Authenticatable
 
     public static function checkEmailExist($email) {
         $query  = self::query()->where('email', $email);
+        $data = $query->first();
+        return $data ? $data : false;
+    }
+
+    public static function checkEmailAdminExist($email) {
+        $query  = self::query()->where('email', $email)->where('type', TYPE_ADMIN);
+        $data = $query->first();
+        return $data ? $data : false;
+    }
+
+    public static function checkResetTokenExist($token) {
+        $query  = self::query()->where('reset_token', $token)->where('type', TYPE_ADMIN);
         $data = $query->first();
         return $data ? $data : false;
     }

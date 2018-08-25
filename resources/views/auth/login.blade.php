@@ -29,7 +29,7 @@
                     </div>
                     </form>
 
-                    <a href="{{ route('reset')}}">{{ trans('auth.login.form.button.forgot') }}</a><br>
+                    <a style="cursor: pointer" href="{{ route('forgot-password') }}">{{ trans('auth.login.form.button.forgot') }}</a><br>
             </div>
         </div> <!--login_wrapper -->
         <div class="login_copyright">Copyright <?= date('Y') ?> eTow</div>

@@ -89,6 +89,7 @@
                 "url": '{{ asset("assets/js/dataTables/lang/en.json") }}'
             }
         });
+        memberTable.dataTable.ext.errMode = 'throw';
     });
 </script>
 @endpush
