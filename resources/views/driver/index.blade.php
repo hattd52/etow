@@ -114,16 +114,17 @@
             },
             "drawCallback": function(settings) {
                 var result = settings.json;
-                var type   = $( "#type_search" ).val();
-                if(type == '<?= DRIVER_ONLINE ?>') {
-                    $('#text_online').html('Online Drivers ('+ result.recordsTotal +')');
-                } else if(type == '<?= DRIVER_OFFLINE ?>') {
-                    $('#text_offline').html('Offline Drivers ('+ result.recordsTotal +')');
-                } else if(type == '<?= FREE_DRIVER ?>') {
-                    $('#text_free').html('Free Drivers ('+ result.recordsTotal +')');
-                } else if(type == '<?= DRIVER_ON_TRIP ?>') {
-                    $('#text_on_trip').html('Drivers On Trip ('+ result.recordsTotal +')');
-                }
+                $('#text_all').html('All Drivers ('+ result.total_all +')');
+                //var type   = $( "#type_search" ).val();
+                //if(type == '<?= DRIVER_ONLINE ?>') {
+                    $('#text_online').html('Online Drivers ('+ result.total_online +')');
+                //} else if(type == '<?= DRIVER_OFFLINE ?>') {
+                    $('#text_offline').html('Offline Drivers ('+ result.total_offline +')');
+                //} else if(type == '<?= FREE_DRIVER ?>') {
+                    $('#text_free').html('Free Drivers ('+ result.total_free +')');
+                //} else if(type == '<?= DRIVER_ON_TRIP ?>') {
+                    $('#text_on_trip').html('Drivers On Trip ('+ result.total_on_trip +')');
+                //}
             },
             "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
             "language": {

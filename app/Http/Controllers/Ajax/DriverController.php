@@ -72,11 +72,11 @@ class DriverController extends Controller
             $i++;
             $tmp = [
                 $i,
-                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_COMPLETE]).'" target="_blank" class="status_green status_txtsize">'.
+                '<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_COMPLETE]).'" target="_blank" class="">'.
                     $driver->driver_code.
                 '</span></a>',
                 $driver->userR ?
-                    ('<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_COMPLETE]).'" target="_blank" class="status_green status_txtsize">'.
+                    ('<a href="'.route('trip.by_driver_type',[$driver->user_id, TRIP_COMPLETE]).'" target="_blank" class="">'.
                         $driver->userR->full_name.
                     '</span></a>') : '',
                 ($driver->userR && $driver->userR->avatar) ?
@@ -126,15 +126,31 @@ class DriverController extends Controller
         }
 
         $total = $this->driver->search($params, $order, $column, $offset, $limit, true);
-        return $this->_getResponse($request, $total, $data);
+
+        $params['type'] = '';
+        $totalAll = $this->driver->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = DRIVER_ONLINE;
+        $totalOnline = $this->driver->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = DRIVER_OFFLINE;
+        $totalOffline = $this->driver->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = FREE_DRIVER;
+        $totalFree = $this->driver->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = DRIVER_ON_TRIP;
+        $totalOnTrip = $this->driver->search($params, $order, $column, $offset, $limit, true);
+        return $this->_getResponse($request, $total, $data, $totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip);
     }
 
-    public function _getResponse($request, $total, $data) {
+    public function _getResponse($request, $total, $data, $totalAll = 0, $totalOnline = 0, $totalOffline = 0, $totalFree = 0, $totalOnTrip = 0) {
         return response()->json([
             'draw' => $request->input('draw'),
             "recordsTotal" => $total,
             'recordsFiltered' => $total,
             'data' => $data,
+            'total_all'  => $totalAll,
+            'total_online' => $totalOnline,
+            'total_offline' => $totalOffline,
+            'total_free' => $totalFree,
+            'total_on_trip' => $totalOnTrip
         ]);
     }    
 }

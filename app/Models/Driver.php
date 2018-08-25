@@ -88,7 +88,7 @@ class Driver extends Model
     public function getNextDriverCode()
     {
         $curr_code = intval(self::query()->max('driver_code'));
-        return str_pad(++$curr_code, 5, 0, STR_PAD_LEFT);
+        return str_pad(++$curr_code, 10, 0, STR_PAD_LEFT);
     }
 
     public function search($params, $order, $column, $offset, $limit, $count) {
@@ -105,7 +105,7 @@ class Driver extends Model
 
         if ($order) {
             if(!$column)
-                $query->orderBy('id', 'desc');
+                $query->orderBy('driver.id', 'desc');
             else
                 $query->orderBy($column, $order);
         }
@@ -162,7 +162,7 @@ class Driver extends Model
                     });
                     break;
                 case DRIVER_ON_TRIP:
-                    $query->where($table_join . '.status', '!=', TRIP_STATUS_COMPLETED);
+                    $query->whereIn($table_join.'.status', [TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]);
                     break;
             }            
         }
