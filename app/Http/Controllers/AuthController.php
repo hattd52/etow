@@ -180,7 +180,7 @@ class AuthController extends Controller
         }
 
         return redirect()->route('login')
-            ->withSuccess(trans('auth.messages.forgot successfully'));
+            ->withSuccess(trans('auth.messages.reset successfully'));
     }
 
     public function getResetComplete()

@@ -1,12 +1,12 @@
 <div class="modal fade modal-danger" id="modal-delete-confirmation" tabindex="-1" role="dialog" aria-labelledby="delete-confirmation-title" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: #d33724 !important; border-color: #c23321;">
+            <div class="modal-header" style="">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="delete-confirmation-title" style="color: #fff;">{{ trans('core.modal.title') }}</h4>
             </div>
-            <div class="modal-body" style="background-color: #dd4b39 !important;">
-                <div class="default-message" style="color: #fff;">
+            <div class="modal-body" style="">
+                <div class="default-message" style="">
                     @isset($message)
                         {!! $message !!}
                     @else
@@ -15,16 +15,16 @@
                 </div>
                 <div class="custom-message"></div>
             </div>
-            <div class="modal-footer" style="background-color: #d33724 !important; border-color: #c23321;">
+            <div class="modal-footer" style="">
                 <button type="button" class="btn btn-outline btn-flat"
-                        data-dismiss="modal" style="border: 1px solid #fff; background: transparent; color: #fff;">
+                        data-dismiss="modal" style="">
                     {{ trans('core.button.cancel') }}
                 </button>
                 <form method="POST" accept-charset="UTF-8" class="pull-left">
                     <input name="_method" type="hidden" value="DELETE">
                     {{ csrf_field() }}
                     <button type="submit" class="btn btn-outline btn-flat"
-                            style="border: 1px solid #fff; background: transparent; color: #fff;">
+                            style="">
                         <i class="fa fa-trash"></i>
                         {{ trans('core.button.delete') }}
                     </button>

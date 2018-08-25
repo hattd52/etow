@@ -17,7 +17,7 @@ $by        = isset($by) ? $by : '';
             <!-- Advanced Tables -->
             <div class="sub_nav">
                 <div id="menu_select">
-                    <div class="trips_but_margin" id="btnAll" style="text-decoration: none; cursor: pointer"> <span class="trips_but">Total Trips ({{ $total }})</span></div>
+                    <div class="trips_but_margin" id="btnAll" style="text-decoration: none; cursor: pointer"> <span class="trips_but" id="text_all">Total Trips</span></div>
                     <a id="btnOngoing" style="cursor: pointer;"><div class="trips_but_margin"> <span class="trips_but_ongoing" id="text_ongoing">Ongoing Trips</span></div></a>
                     <a id="btnSchedule" style="cursor: pointer;"><div class="trips_but_margin"> <span class="trips_but_scheduled" id="text_schedule">Scheduled Trips</span></div></a>
                     <a id="btnComplete" style="cursor: pointer;"><div class="trips_but_margin"> <span class="trips_but_completed" id="text_complete">Completed Trips</span></div></a>
@@ -206,18 +206,19 @@ $by        = isset($by) ? $by : '';
             },
             "drawCallback": function(settings) {
                 var result = settings.json;
-                var type   = $( "#type_search" ).val();
-                if(type == '<?= TRIP_ON_GOING ?>') {
-                    $('#text_ongoing').html('Ongoing Trips ('+ result.recordsTotal +')');
-                } else if(type == '<?= TRIP_SCHEDULE ?>') {
-                    $('#text_schedule').html('Scheduled Trips ('+ result.recordsTotal +')');
-                } else if(type == '<?= TRIP_COMPLETE ?>') {
-                    $('#text_complete').html('Completed Trips ('+ result.recordsTotal +')');
-                } else if(type == '<?= TRIP_REJECT ?>') {
-                    $('#text_reject').html('Rejected Trips ('+ result.recordsTotal +')');
-                } else if(type == '<?= TRIP_CANCEL ?>') {
-                    $('#text_cancel').html('Canceled Trips ('+ result.recordsTotal +')');
-                }
+                $('#text_all').html('Total Trips ('+ result.total_all +')');
+                //var type   = $( "#type_search" ).val();
+                //if(type == '<?= TRIP_ON_GOING ?>') {
+                    $('#text_ongoing').html('Ongoing Trips ('+ result.total_onGoing +')');
+                //} else if(type == '<?= TRIP_SCHEDULE ?>') {
+                    $('#text_schedule').html('Scheduled Trips ('+ result.total_schedule +')');
+                //} else if(type == '<?= TRIP_COMPLETE ?>') {
+                    $('#text_complete').html('Completed Trips ('+ result.total_complete +')');
+                //} else if(type == '<?= TRIP_REJECT ?>') {
+                    $('#text_reject').html('Rejected Trips ('+ result.total_reject +')');
+                //} else if(type == '<?= TRIP_CANCEL ?>') {
+                    $('#text_cancel').html('Canceled Trips ('+ result.total_cancel +')');
+                //}
 
                 var by = '<?= $by ?>';
                 var payment_driver = $( "#payment_driver" ).val();

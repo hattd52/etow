@@ -97,10 +97,22 @@ class TripController extends Controller
         
         $total_pay     = (($total_cash + $total_card) - ($total_paid_cash + $total_paid_card));
         $total_collect = $total_paid_cash + $total_paid_card;
-
         $total = $this->trip->search($params, $order, $column, $offset, $limit, true);
+
+        $params['type'] = '';
+        $totalAll = $this->trip->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = TRIP_ON_GOING;
+        $totalOnGoing = $this->trip->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = TRIP_SCHEDULE;
+        $totalSchedule = $this->trip->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = TRIP_COMPLETE;
+        $totalComplete = $this->trip->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = TRIP_REJECT;
+        $totalReject = $this->trip->search($params, $order, $column, $offset, $limit, true);
+        $params['type'] = TRIP_CANCEL;
+        $totalCancel = $this->trip->search($params, $order, $column, $offset, $limit, true);
         return $this->_getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
-            $total_pay, $total_collect);
+            $total_pay, $total_collect, $totalAll, $totalOnGoing, $totalSchedule, $totalComplete, $totalReject, $totalCancel);
     }
 
     public function _getTmpNormal($i, $trip) {
@@ -160,7 +172,8 @@ class TripController extends Controller
     }
 
     public function _getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
-        $total_pay, $total_collect) {
+        $total_pay, $total_collect, $totalAll = false, $totalOnGoing = false, $totalSchedule = false,
+             $totalComplete = false, $totalReject = false, $totalCancel = false) {
         return response()->json([
             'draw' => $request->input('draw'),
             "recordsTotal" => $total,
@@ -171,7 +184,13 @@ class TripController extends Controller
             'total_paid_cash' => $total_paid_cash,
             'total_paid_card' => $total_paid_card,
             'total_pay' => $total_pay,
-            'total_collect' => $total_collect
+            'total_collect' => $total_collect,
+            'total_all' => $totalAll,
+            'total_onGoing' => $totalOnGoing,
+            'total_schedule' => $totalSchedule,
+            'total_complete' => $totalComplete,
+            'total_reject' => $totalReject,
+            'total_cancel' => $totalCancel
         ]);
     }
 
@@ -242,13 +261,15 @@ class TripController extends Controller
                     'coords' => ['lat' => floatval($item->current_latitude), 'lng' => floatval($item->current_longitude)],
                     'iconImage' => asset('assets/img/car.png'),
                     'content' =>
-                        '<ul>
-                            <li>Type: '.$item->vehicle_type.'</li>
-                            <li>Plate No: '.($item->driverR ? $item->driverR->vehicle_number : '').'</li>
-                            <li>Driver ID: '.($item->driverR ? $item->driverR->driver_code : '').'</li>
-                            <li>Driver Name: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->full_name : '').'<li/>
-                            <li>Phone: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->phone : '').'</li>
-                        </ul>'
+                        '<div style="background: black; color: white">    
+                            <ul>
+                                <li style="list-style: none">Type: '.$item->vehicle_type.'</li>
+                                <li style="list-style: none">Plate No: '.($item->driverR ? $item->driverR->vehicle_number : '').'</li>
+                                <li style="list-style: none">Driver ID: '.($item->driverR ? $item->driverR->driver_code : '').'</li>
+                                <li style="list-style: none">Driver Name: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->full_name : '').'<li/>
+                                <li style="list-style: none">Phone: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->phone : '').'</li>
+                            </ul>
+                        </div>'
                 ];
             }
         }

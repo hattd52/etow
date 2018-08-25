@@ -180,7 +180,10 @@ class Trip extends Model
                     $query->whereIn($table.'.status', [TRIP_STATUS_ACCEPT, TRIP_STATUS_ARRIVED, TRIP_STATUS_JOURNEY_COMPLETED, TRIP_STATUS_ON_GOING]);
                     break;
                 case TRIP_SCHEDULE:
-                    $query->where($table.'.is_schedule', STATUS_ACTIVE);
+                    $query->where(function ($query) use ($params, $table) {
+                        $query->where($table . '.is_schedule', STATUS_ACTIVE)
+                            ->Where($table . '.status', TRIP_STATUS_NEW);
+                    });
                     break;
                 case TRIP_COMPLETE:
                     $query->where($table.'.status', TRIP_STATUS_COMPLETED);
