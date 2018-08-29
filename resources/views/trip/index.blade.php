@@ -52,8 +52,14 @@ $by        = isset($by) ? $by : '';
                     <div class="page_sort">
                         <div class="search_n">Search: <input name="key" type="search" class="input_320" placeholder="Enter Trip No/ Driver Name / ID / Company Name"></div>
                         <div class="date_n"><a id="btnSort" class="btn btn-success">Sort</a></div>
-                        <div class="date_n">to: <input name="end_date" type="date" class="input_150" ></div>
-                        <div class="date_n">Sort: <input name="start_date" type="date" class="input_150" ></div>
+                        <div class="date_n">
+                            to: <input name="end_date" id="endDate" type="date" class="input_150" >
+                            <span class="help-block" id="error_end_date"></span>
+                        </div>
+                        <div class="date_n">
+                            Sort: <input name="start_date" id="startDate" type="date" class="input_150" >
+                            <span class="help-block" id="error_start_date"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -97,6 +103,11 @@ $by        = isset($by) ? $by : '';
                         <div class="col-sm-4"></div>
                         <div class="col-sm-4">
                             <table class="table table-bordered">
+                                <tr>
+                                    <th></th>
+                                    <th style="font-weight: bold">Paid by Cash</th>
+                                    <th style="font-weight: bold">Paid by Card</th>
+                                </tr>
                                 <tr>
                                     <td>Total</td>
                                     <td><span id="total_cash"></span></td>
@@ -177,6 +188,7 @@ $by        = isset($by) ? $by : '';
 
 <script type="text/javascript">
     $(function () {
+        var is_first = true;
         window.memberTable = $('#table-trips').dataTable({
             "processing": true,
             "serverSide": true,
@@ -239,6 +251,10 @@ $by        = isset($by) ? $by : '';
                         $('#collect_money').show();
                     }
                 }
+
+                if(result.draw != '1') {
+                    is_first = false;
+                }
             },
             "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
             "language": {
@@ -252,7 +268,31 @@ $by        = isset($by) ? $by : '';
         });
 
         $('#btnSort').on('click', function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            if ((Date.parse(startDate) > Date.parse(endDate))) {
+                alert("End date should be greater than Start date"); return false;
+            }
+
             memberTable.fnDraw();
+        });
+
+        var database = firebase.database();
+        var tripRef = database.ref('trip');
+        tripRef.on("child_added", function(snap) {
+            if(!is_first) {
+                memberTable.fnDraw();
+            }
+        });
+        tripRef.on("child_changed", function(snap) {
+            if(!is_first) {
+                memberTable.fnDraw();
+            }
+        });
+        tripRef.on("child_removed", function(snap) {
+            if(!is_first) {
+                memberTable.fnDraw();
+            }
         });
 
         $('#btnOngoing').on('click', function () {
@@ -329,21 +369,6 @@ $by        = isset($by) ? $by : '';
             memberTable.fnDraw();
         });
 
-        var database = firebase.database();
-        var tripRef = database.ref('trip');
-        tripRef.once("child_added", function(snap) {
-            console.log('add');
-            memberTable.fnDraw();
-        });
-        tripRef.once("child_changed", function(snap) {
-            console.log('change');
-            memberTable.fnDraw();
-        });
-        tripRef.once("child_removed", function(snap) {
-            console.log('remove');
-            memberTable.fnDraw();
-        });
-
         window.paidTrip = function(trip_id) {
             $('#btnPaid').html('<i class="fa fa-spinner fa-spin"></i>');
             $('#btnPaid').attr('disabled',true);
@@ -371,4 +396,3 @@ $by        = isset($by) ? $by : '';
     });
 </script>
 @endpush
-

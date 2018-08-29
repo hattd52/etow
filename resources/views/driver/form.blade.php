@@ -36,14 +36,14 @@
     <div class="sub-title">Type Of Services</div>
     <div>
         <div class="checkbox3 checkbox-inline checkbox-check checkbox-light">
-            <input type="checkbox" name="vehicle_type[]" id="flat-bed" value="{{ VEHICLE_TYPE_FLAT_BED }}"
+            <input type="checkbox" name="vehicle_type" id="flat-bed" value="{{ VEHICLE_TYPE_FLAT_BED }}"
                 {{ ($driver && substr_count($driver, VEHICLE_TYPE_FLAT_BED)) ? 'checked' : '' }} >
             <label for="flat-bed">
                 Flat Bed
             </label>
         </div>
         <div class="checkbox3 checkbox-inline checkbox-check checkbox-light">
-            <input type="checkbox" name="vehicle_type[]" id="normal" value="{{ VEHICLE_TYPE_NORMAL }}"
+            <input type="checkbox" name="vehicle_type" id="normal" value="{{ VEHICLE_TYPE_NORMAL }}"
                 {{ ($driver && substr_count($driver, VEHICLE_TYPE_NORMAL)) ? 'checked' : '' }} >
             <label for="normal">
                 Normal
@@ -64,6 +64,8 @@
             <div class="b_l_gal" style="width: 100px; height: 70px">
                 @if($driver->userR && $driver->userR->avatar)
                     <img src="{{ asset('upload/account/'.$driver->userR->avatar) }}" class="img-responsive"/>
+                @else
+                    <img src="#" style="width: 100px; height: 70px;display: none" id="driver_upload" class="img-responsive"/>
                 @endif
             </div>
             <div class="clearfix"></div>
@@ -78,6 +80,8 @@
             <div class="b_l_gal" style="width: 100px; height: 70px">
                 @if($driver->driver_license)
                     <img src="{{ asset('upload/driver/'.$driver->driver_license) }}" class="img-responsive"/>
+                @else
+                    <img src="#" style="width: 100px; height: 70px;display: none" id="license_upload" class="img-responsive"/>
                 @endif
             </div>
             <div class="clearfix"></div>
@@ -92,6 +96,8 @@
             <div class="b_l_gal" style="width: 100px; height: 70px">
                 @if($driver->emirate_id)
                     <img src="{{ asset('upload/driver/'.$driver->emirate_id) }}" class="img-responsive"/>
+                @else
+                    <img src="#" style="width: 100px; height: 70px;display: none" id="emirate_upload" class="img-responsive"/>
                 @endif
             </div>
             <div class="clearfix"></div>
@@ -106,6 +112,8 @@
             <div class="b_l_gal" style="width: 100px; height: 70px">
                 @if($driver->mulkiya)
                     <img src="{{ asset('upload/driver/'.$driver->mulkiya) }}" class="img-responsive"/>
+                @else
+                    <img src="#" style="width: 100px; height: 70px;display: none" id="mulkiya_upload" class="img-responsive"/>
                 @endif
             </div>
             <div class="clearfix"></div>
@@ -113,3 +121,52 @@
         </div>
     </div> <!-- gallery-->
 </div>
+
+@push('js-stack')
+<script type="text/javascript">
+    $(function () {
+        $("input:checkbox").on('click', function() {
+            // in the handler, 'this' refers to the box clicked on
+            var $box = $(this);
+            if ($box.is(":checked")) {
+                // the name of the box is retrieved using the .attr() method
+                // as it is assumed and expected to be immutable
+                var group = "input:checkbox[name='" + $box.attr("name") + "']";
+                // the checked state of the group/box on the other hand will change
+                // and the current value is retrieved using .prop() method
+                $(group).prop("checked", false);
+                $box.prop("checked", true);
+            } else {
+                $box.prop("checked", false);
+            }
+        });
+
+        function readURL(input, img) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#'+img).attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("input[name='avatar']").change(function(){
+            readURL(this, 'driver_upload');
+            $('#driver_upload').show();
+        });
+        $("input[name='driver_license']").change(function(){
+            readURL(this, 'license_upload');
+            $('#license_upload').show();
+        });
+        $("input[name='emirate_id']").change(function(){
+            readURL(this, 'emirate_upload');
+            $('#emirate_upload').show();
+        });
+        $("input[name='mulkiya']").change(function(){
+            readURL(this, 'mulkiya_upload');
+            $('#mulkiya_upload').show();
+        });
+    });
+</script>
+@endpush

@@ -68,8 +68,13 @@ class Trip extends Model
     }
 
     public static function totalTripByDriverAndStatus($driver_id, $status) {
-        return self::query()->where('driver_id', $driver_id)
-            ->whereIn('status', $status)->count();
+        $query = self::query()->where('driver_id', $driver_id);
+        if(in_array(TRIP_STATUS_NEW, $status))
+            $query->where('is_schedule', STATUS_ACTIVE);
+        else
+            $query->whereIn('status', $status);
+
+        return $query->count();
     }
 
     public static function totalTripByStatus($status) {

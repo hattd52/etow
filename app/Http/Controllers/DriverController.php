@@ -124,7 +124,7 @@ class DriverController extends Controller
         $driver = new Driver();
         $driver->user_id = $account->id;
         $driver->driver_code = $request->get('driver_code');
-        $driver->vehicle_type = implode(',',$request->get('vehicle_type'));
+        $driver->vehicle_type = $request->get('vehicle_type');
         $driver->vehicle_number = $request->get('vehicle_number');
         $driver->company_name = $request->get('company_name');
         $driver->is_online = 1;
@@ -231,7 +231,7 @@ class DriverController extends Controller
         $oldMulkiya = $driver->mulkiya;
 
         $driver->company_name = $request->get('company_name');
-        $driver->vehicle_type = implode(',',$request->get('vehicle_type'));
+        $driver->vehicle_type = $request->get('vehicle_type');
         $driver->vehicle_number = $request->get('vehicle_number');
         if($licenseName) {
             $driver->driver_license = $licenseName;

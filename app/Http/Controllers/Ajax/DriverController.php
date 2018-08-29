@@ -82,7 +82,7 @@ class DriverController extends Controller
                 ($driver->userR && $driver->userR->avatar) ?
                 "<img src='".asset('upload/account/'.$driver->userR->avatar)."' class='img-responsive' />" : '',
                 $driver->userR ? $driver->userR->email : '',
-                $driver->vehicle_type,
+                $this->getLabelTypeVehicle($driver->vehicle_type),
                 $driver->vehicle_number,
                 $driver->company_name,
                 ($driver->driver_license) ?
@@ -152,5 +152,9 @@ class DriverController extends Controller
             'total_free' => $totalFree,
             'total_on_trip' => $totalOnTrip
         ]);
-    }    
+    }
+
+    public function getLabelTypeVehicle($type_vehicle) {
+        return $type_vehicle == VEHICLE_TYPE_NORMAL ? 'Normal' : 'Flat Bed';
+    }
 }

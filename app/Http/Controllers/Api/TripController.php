@@ -48,6 +48,16 @@ class TripController extends ApiBaseController
         $vehicle_type = $trips->vehicle_type;
         $price        = $trips->price;
 
+        $distance     = isset($trips->distance) ? $trips->distance : '';
+        if($distance) {
+            $priceAmount = $this->getPriceDistance($distance);
+            if($priceAmount !=  $price) {
+                $this->message = 'Price invalid. Please check again.';
+                $this->http_code = MISSING_PARAMS;
+                goto next;
+            }
+        }
+
         if(!$pick_up || !$drop_off || !$vehicle_type || !$price) {
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
@@ -284,5 +294,15 @@ class TripController extends ApiBaseController
         $this->status  = STATUS_SUCCESS;
         $this->message = 'Get time setting successful';
         return $this->ResponseData($data);
+    }
+
+    public function getPriceDistance($distance) {
+        $price = Price::getPriceByDistance($distance);
+        if(empty($price)) {
+            $price = 0;
+        }
+
+        $price = floatval($price->price);
+        return $price;
     }
 }
