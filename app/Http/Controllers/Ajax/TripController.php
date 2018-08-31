@@ -261,27 +261,72 @@ class TripController extends Controller
     
     public function getMarker() {
         $data = [];
-        $trip_going = $this->trip->getTripGoing();
-        if(!empty($trip_going)) {
-            foreach ($trip_going as $item) {
+//        $trip_going = $this->trip->getTripGoing();
+//        $driverIds  = [];
+//        if(!empty($trip_going)) {
+//            foreach ($trip_going as $item) {
+//                $driverIds = $item->driver_id;
+//                $data[] = [
+//                    'coords' => ['lat' => floatval($item->current_latitude), 'lng' => floatval($item->current_longitude)],
+//                    'iconImage' => $item->driverR->is_online == STATUS_ACTIVE ? asset('assets/img/car_online.png') :
+//                        asset('assets/img/car_offline.png'),
+//                    'content' =>
+//                        '<div style="background: black; color: white">    
+//                            <ul>
+//                                <li style="list-style: none">Type: '.$item->vehicle_type.'</li>
+//                                <li style="list-style: none">Plate No: '.($item->driverR ? $item->driverR->vehicle_number : '').'</li>
+//                                <li style="list-style: none">Driver ID: '.($item->driverR ? $item->driverR->driver_code : '').'</li>
+//                                <li style="list-style: none">Driver Name: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->full_name : '').'<li/>
+//                                <li style="list-style: none">Phone: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->phone : '').'</li>
+//                            </ul>
+//                        </div>'
+//                ];
+//            }
+//        }
+
+        $lastTrips = [];
+        $trips = Trip::query()->whereNotNull('driver_id')
+            ->whereNotNull('current_latitude')
+            ->whereNotNull('current_longitude')
+            ->get();
+        if(!empty($trips)) {
+            foreach ($trips as $trip) {
+                $lastTrips[$trip->driver_id] = [
+                    'lat'  => $trip->current_latitude,
+                    'long' => $trip->current_longitude
+                ];
+            }
+        }
+
+        $drivers = $this->driver->getListDriverOnMap();
+        if(!empty($drivers)) {
+            foreach ($drivers as $driver) {
+                if(!empty($lastTrips[$driver->user_id])) {
+                    $lat  = $lastTrips[$driver->user_id]['lat'];
+                    $long = $lastTrips[$driver->user_id]['long'];
+                } else {
+                    $lat  = $driver->latitude;
+                    $long = $driver->longitude;
+                }
+
                 $data[] = [
-                    'coords' => ['lat' => floatval($item->current_latitude), 'lng' => floatval($item->current_longitude)],
-                    'iconImage' => $item->driverR->is_online == STATUS_ACTIVE ? asset('assets/img/car_online.png') :
+                    'coords' => ['lat' => floatval($lat), 'lng' => floatval($long)],
+                    'iconImage' => $driver->is_online == STATUS_ACTIVE ? asset('assets/img/car_online.png') :
                         asset('assets/img/car_offline.png'),
                     'content' =>
                         '<div style="background: black; color: white">    
                             <ul>
-                                <li style="list-style: none">Type: '.$item->vehicle_type.'</li>
-                                <li style="list-style: none">Plate No: '.($item->driverR ? $item->driverR->vehicle_number : '').'</li>
-                                <li style="list-style: none">Driver ID: '.($item->driverR ? $item->driverR->driver_code : '').'</li>
-                                <li style="list-style: none">Driver Name: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->full_name : '').'<li/>
-                                <li style="list-style: none">Phone: '.(($item->driverR && $item->driverR->userR) ? $item->driverR->userR->phone : '').'</li>
+                                <li style="list-style: none">Type: '.$driver->vehicle_type.'</li>
+                                <li style="list-style: none">Plate No: '.$driver->vehicle_number.'</li>
+                                <li style="list-style: none">Driver ID: '.$driver->driver_code.'</li>
+                                <li style="list-style: none">Driver Name: '.($driver->userR ? $driver->userR->full_name : '').'<li/>
+                                <li style="list-style: none">Phone: '.($driver->userR ? $driver->userR->phone : '').'</li>
                             </ul>
                         </div>'
                 ];
             }
         }
-        
+
         return json_encode($data);
     }
 

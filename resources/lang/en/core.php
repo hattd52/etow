@@ -28,7 +28,7 @@
             ]
         ],
         'modal' => [
-            'title' => 'Confirmation',
+            'title' => 'Etown',
             'confirmation-message' => 'Are you sure you want to delete this record?',
             'forgot title' => 'Forgot Password'
         ],

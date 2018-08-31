@@ -222,4 +222,17 @@ class Driver extends Model
     public function getTotalDriverOffline() {
         return Driver::query()->where('is_online', STATUS_INACTIVE)->count();
     }
+
+    public static function getListDriverOnMap() {
+        $query = Driver::query();
+        $query->join('account', 'account.id', '=', 'driver.user_id');
+        $query->where('account.status', STATUS_ACTIVE);
+        return $query->get();
+    }
+
+    public static function getCurrentTrip($driver_id) {
+        return Trip::query()->where('driver_id', $driver_id)
+            ->latest()
+            ->first();
+    }
 }
