@@ -110,7 +110,7 @@ class DriverController extends Controller
             'full_name' => $request->get('full_name'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
-            'phone' => '',
+            'phone'    => $request->get('phone'),
             'status'   => STATUS_ACTIVE,
             'type'     => TYPE_DRIVER,
             'avatar'   => $avatarName,
@@ -210,6 +210,7 @@ class DriverController extends Controller
         $account = Account::find($driver->user_id);
         $oldAvatar = $account->avatar;
         $account->full_name = $request->get('full_name');
+        $account->phone     = $request->get('phone');
         if($avatarName) {
             $account->avatar = $avatarName;
         }

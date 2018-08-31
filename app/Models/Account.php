@@ -25,7 +25,7 @@ class Account extends Authenticatable
      */
     protected $fillable = [
         'full_name', 'email', 'password', 'phone', 'status', 'created_at', 'updated_at',
-        'token', 'type', 'remember_token', 'avatar', 'reset_token'
+        'token', 'type', 'remember_token', 'avatar', 'reset_token', 'latitude', 'longitude'
     ];
     public $timestamps = false;
 
@@ -73,7 +73,9 @@ class Account extends Authenticatable
     }
 
     public static function checkTokenExist($token) {
-        $query  = self::query()->where('token', $token);
+        $query  = self::query();
+        $query->where('token', $token)
+              ->where('status', STATUS_ACTIVE);
         $data = $query->first();
         return $data ? $data : false;
     }  

@@ -259,7 +259,8 @@ class TripController extends Controller
             foreach ($trip_going as $item) {
                 $data[] = [
                     'coords' => ['lat' => floatval($item->current_latitude), 'lng' => floatval($item->current_longitude)],
-                    'iconImage' => asset('assets/img/car.png'),
+                    'iconImage' => $item->driverR->is_online == STATUS_ACTIVE ? asset('assets/img/car_online.png') :
+                        asset('assets/img/car_offline.png'),
                     'content' =>
                         '<div style="background: black; color: white">    
                             <ul>

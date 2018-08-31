@@ -284,12 +284,14 @@ class TripController extends ApiBaseController
     }
 
     public function getSettingTime() {
-        $timeKm     = Setting::getValueByKey(SETTING_TIME_KM);
-        $timeBuffer = Setting::getValueByKey(SETTING_TIME_BUFFER);
+        $timeKm        = Setting::getValueByKey(SETTING_TIME_KM);
+        $timeBuffer    = Setting::getValueByKey(SETTING_TIME_BUFFER);
+        $radiusRequest = Setting::getValueByKey(SETTING_RADIUS_REQUEST);
 
         $data = [
             'time_km'     => $timeKm,
-            'time_buffer' => $timeBuffer
+            'time_buffer' => $timeBuffer,
+            'radius_request' => $radiusRequest
         ];
         $this->status  = STATUS_SUCCESS;
         $this->message = 'Get time setting successful';

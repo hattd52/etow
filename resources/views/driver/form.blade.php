@@ -6,6 +6,12 @@
     </div>
 
     <div class="form-group">
+        <label for="exampleInputEmail1">Phone</label>
+        <input type="text" class="form-control" name="phone"
+               value="{{ ($driver && $driver->userR) ? $driver->userR->phone : '' }}" placeholder="Enter Phone">
+    </div>
+
+    <div class="form-group">
         <label for="exampleInputEmail1">Company Name (Optional)</label>
         <input type="text" class="form-control" name="company_name"
                value="{{ $driver ? $driver->company_name : '' }}" placeholder="Enter Company Name">

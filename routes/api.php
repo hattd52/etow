@@ -95,6 +95,7 @@ Route::group(['middleware' => ['auth.api']], function () {
     Route::post('/v1/user/update-profile', 'Api\AccountController@updateProfile');
     Route::post('/v1/user/logout', 'Api\AccountController@logout');
     Route::post('/v1/user/rate-trip', 'Api\AccountController@rateTrip');
+    Route::post('/v1/user/update-location', 'Api\AccountController@updateLocation');
 
     Route::get('/v1/price/list', 'Api\PriceController@index');
 

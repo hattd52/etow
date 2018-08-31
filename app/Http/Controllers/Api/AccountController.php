@@ -353,4 +353,29 @@ class AccountController extends ApiBaseController
         next:
         return $this->ResponseData($data);
     }
+
+    public function updateLocation(Request $request) {
+        $data = [];
+        $lat  = $request->get('latitude');
+        $long = $request->get('longitude');
+        if(!$lat || !$long) {
+            $this->message = 'Missing params';
+            $this->http_code = MISSING_PARAMS;
+            goto next;
+        }
+
+        /** @var Account $account */
+        $account = Account::find($this->account->id);
+        if(!empty($account)) {
+            $account->latitude  = $lat;
+            $account->longitude = $long;
+            $account->save();
+        }
+
+        $this->status  = STATUS_SUCCESS;
+        $this->message = 'update location successfully';
+
+        next:
+        return $this->ResponseData($data);
+    }
 }
