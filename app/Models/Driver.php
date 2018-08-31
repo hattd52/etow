@@ -111,12 +111,19 @@ class Driver extends Model
         }
 
         if ($count) {
-            $user = intval($query->count());
+            if($params['type'] && in_array($params['type'], [FREE_DRIVER, DRIVER_ON_TRIP]))
+                $user = intval($query->count(DB::raw('DISTINCT(driver.user_id)')));
+            else
+                $user = intval($query->count());
         } else {
             if ($offset)
                 $query->offset($offset);
             if ($limit)
                 $query->limit($limit);
+
+            if($params['type'] && in_array($params['type'], [FREE_DRIVER, DRIVER_ON_TRIP])) {
+                $query->groupBy('trip.driver_id');
+            }
             //dd($query->toSql());
             $user = $query->get();
         }
@@ -140,7 +147,6 @@ class Driver extends Model
             if(in_array($params['type'], [FREE_DRIVER, DRIVER_ON_TRIP])) {
                 $driverOnTrip = $this->getListDriverOnTrip();
                 $query->leftJoin('trip', 'trip.driver_id', '=', 'driver.user_id');
-                $query->groupBy($table_join.'.driver_id');
             }
             
             switch ($params['type']) {
@@ -157,8 +163,10 @@ class Driver extends Model
                     $query->orWhere(function ($query) use ($params, $table, $table_join, $driverOnTrip) {
                         //$query->whereNotNull($table_join . '.driver_id');
                         //$query->where($table_join . '.driver_id', '=', $table.'.user_id');
-                        $query->where($table_join . '.status', TRIP_STATUS_COMPLETED);
-                        $query->whereNotIn($table_join . '.driver_id', $driverOnTrip);
+                        $query->whereIn($table_join . '.status', [TRIP_STATUS_CANCEL, TRIP_STATUS_REJECT, TRIP_STATUS_COMPLETED]);
+                        if(!empty($driverOnTrip)) {
+                            $query->whereNotIn($table_join . '.driver_id', $driverOnTrip);
+                        }
                     });
                     break;
                 case DRIVER_ON_TRIP:
@@ -187,8 +195,9 @@ class Driver extends Model
     }
 
     public function getListDriverOnTrip() {
-        return Trip::query()->where('status', '!=', TRIP_STATUS_COMPLETED)
+        return Trip::query()->whereNotIn('status', [TRIP_STATUS_CANCEL, TRIP_STATUS_REJECT, TRIP_STATUS_COMPLETED])
             ->whereNotNull('driver_id')
+            ->groupBy('driver_id')
             ->pluck('driver_id');
     }
 

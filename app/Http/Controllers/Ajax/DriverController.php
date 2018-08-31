@@ -127,6 +127,7 @@ class DriverController extends Controller
             $data[] = $tmp;
         }
 
+        $params['type'] = $request->get('type');
         $total = $this->driver->search($params, $order, $column, $offset, $limit, true);
         return $this->_getResponse($request, $total, $data, $totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip);
     }
@@ -142,7 +143,7 @@ class DriverController extends Controller
         $totalFree = $this->driver->search($params, $order, $column, $offset, $limit, true);
         $params['type'] = DRIVER_ON_TRIP;
         $totalOnTrip = $this->driver->search($params, $order, $column, $offset, $limit, true);
-
+        //dd($totalOnTrip);
         return [$totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip];
     }
 

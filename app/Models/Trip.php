@@ -153,6 +153,9 @@ class Trip extends Model
         }
 
         if ($count) {
+            if($params['type'] === TRIP_ON_GOING) {
+                dd($query->toSql());
+            }            
             $user = intval($query->count());
         } else {
             if ($offset)
