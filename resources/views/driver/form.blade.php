@@ -1,24 +1,24 @@
 <div class="col-sm-12">
     <div class="form-group">
-        <label for="exampleInputEmail1">Driver Name</label>
+        <label for="full_name">Driver Name</label>
         <input type="text" class="form-control" name="full_name"
                value="{{ ($driver && $driver->userR) ? $driver->userR->full_name : '' }}" placeholder="Enter Driver Name">
     </div>
 
     <div class="form-group">
-        <label for="exampleInputEmail1">Phone</label>
+        <label for="phone">Phone</label>
         <input type="text" class="form-control" name="phone"
                value="{{ ($driver && $driver->userR) ? $driver->userR->phone : '' }}" placeholder="Enter Phone">
     </div>
 
     <div class="form-group">
-        <label for="exampleInputEmail1">Company Name (Optional)</label>
+        <label for="company_name">Company Name (Optional)</label>
         <input type="text" class="form-control" name="company_name"
-               value="{{ $driver ? $driver->company_name : '' }}" placeholder="Enter Company Name">
+               value="{{ $driver ? $driver->company_name : old('company_name') }}" placeholder="Enter Company Name">
     </div>
 
     <div class="form-group">
-        <label for="exampleInputEmail1">Driver ID</label>
+        <label for="driver_code">Driver ID</label>
         <div class="status_red">
             {{ $driver->id ? $driver->driver_code : $driver_code }}
             <input type="hidden" name="driver_code" value="{{ $driver->id ? $driver->driver_code : $driver_code }}" />
@@ -26,14 +26,14 @@
     </div>
 
     <div class="form-group">
-        <label for="exampleInputEmail1">Email ID</label>
+        <label for="email">Email ID</label>
         <input type="email" class="form-control" name="email"
                value="{{ ($driver && $driver->userR) ? $driver->userR->email : '' }}" placeholder="Enter Email ID"
                required="true" autocomplete="off" <?= $driver->id ? 'disabled="true"' : '' ?>>
     </div>
 
     <div class="form-group">
-        <label for="exampleInputEmail1">Password</label>
+        <label for="password">Password</label>
         <input type="password" class="form-control" name="password"
                value="{{ ($driver && $driver->userR) ? $driver->userR->password : '' }}" placeholder="Enter Password"
                required="true" autocomplete="off" <?= $driver->id ? 'disabled="true"' : '' ?>>
@@ -58,7 +58,7 @@
     </div>
     <br/>
     <div class="form-group">
-        <label for="exampleInputEmail1">Vehicle Number</label>
+        <label for="vehicle_number">Vehicle Number</label>
         <input type="text" class="form-control" name="vehicle_number"
                value="{{ $driver ? $driver->vehicle_number : '' }}" placeholder="Enter Vehicle Number">
     </div>

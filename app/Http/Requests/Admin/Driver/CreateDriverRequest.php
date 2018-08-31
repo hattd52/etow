@@ -20,7 +20,8 @@ class CreateDriverRequest extends FormRequest
             'full_name' => 'required',
             'vehicle_type' => 'required',
             'vehicle_number' => 'required',
-            'driver_license' => 'required'
+            'driver_license' => 'required',
+            'phone' => 'required',
         ];
     }
 

@@ -314,14 +314,16 @@ class TripController extends Controller
                     'iconImage' => $driver->is_online == STATUS_ACTIVE ? asset('assets/img/car_online.png') :
                         asset('assets/img/car_offline.png'),
                     'content' =>
-                        '<div style="background: black; color: white">    
-                            <ul>
-                                <li style="list-style: none">Type: '.$driver->vehicle_type.'</li>
-                                <li style="list-style: none">Plate No: '.$driver->vehicle_number.'</li>
-                                <li style="list-style: none">Driver ID: '.$driver->driver_code.'</li>
-                                <li style="list-style: none">Driver Name: '.($driver->userR ? $driver->userR->full_name : '').'<li/>
-                                <li style="list-style: none">Phone: '.($driver->userR ? $driver->userR->phone : '').'</li>
-                            </ul>
+                        '<div id="content">
+                            <div style="">    
+                                <ul>
+                                    <li style="list-style: none">Type: '.$driver->vehicle_type.'</li>
+                                    <li style="list-style: none">Plate No: '.$driver->vehicle_number.'</li>
+                                    <li style="list-style: none">Driver ID: '.$driver->driver_code.'</li>
+                                    <li style="list-style: none">Driver Name: '.($driver->userR ? $driver->userR->full_name : '').'</li>
+                                    <li style="list-style: none">Phone: '.($driver->userR ? $driver->userR->phone : '').'</li>
+                                </ul>
+                            </div>
                         </div>'
                 ];
             }

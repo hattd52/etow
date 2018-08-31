@@ -10,7 +10,9 @@ use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
 
 class DriverController extends Controller
 {
@@ -56,8 +58,24 @@ class DriverController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateDriverRequest $request)
+    public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+            'full_name' => 'required',
+            'vehicle_type' => 'required',
+            'vehicle_number' => 'required',
+            'driver_license' => 'required',
+            'phone' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        
         DB::beginTransaction();
         list($avatar, $avatarName, $license, $licenseName, $emirate, $emirateName, $mulkiya, $mulkiyaName) =
             $this->_getFileUpload($request);
