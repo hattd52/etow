@@ -46,7 +46,7 @@ class TripController extends Controller
         $user_id    = $request->input('user_id');
         $driver_id  = $request->input('driver_id');
         $payment_driver = $request->input('payment_driver');
-
+        
         $orderName = $request->input('order');
         if ($orderName) {
             $order = $orderName[0]['dir'];
@@ -64,9 +64,11 @@ class TripController extends Controller
 
         $trips = $this->trip->search($params, $order, $column, $offset, $limit, false);
         $total_cash = $total_card = $total_paid_cash = $total_paid_card = $total_pay = $total_collect = 0;
+        list($totalAll, $totalOnGoing, $totalSchedule, $totalComplete, $totalReject, $totalCancel) =
+            $this->getTotalByType($params, $order, $column, $offset, $limit);
         if($trips->isEmpty() == true){
             return $this->_getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
-                $total_pay, $total_collect);
+                $total_pay, $total_collect, $totalAll, $totalOnGoing, $totalSchedule, $totalComplete, $totalReject, $totalCancel);
         }
 
         $i = $request->input('start');
@@ -94,11 +96,16 @@ class TripController extends Controller
                 }
             }
         }
-        
+
         $total_pay     = (($total_cash + $total_card) - ($total_paid_cash + $total_paid_card));
         $total_collect = $total_paid_cash + $total_paid_card;
         $total = $this->trip->search($params, $order, $column, $offset, $limit, true);
 
+        return $this->_getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
+            $total_pay, $total_collect, $totalAll, $totalOnGoing, $totalSchedule, $totalComplete, $totalReject, $totalCancel);
+    }
+
+    public function getTotalByType(&$params, $order, $column, $offset, $limit) {
         $params['type'] = '';
         $totalAll = $this->trip->search($params, $order, $column, $offset, $limit, true);
         $params['type'] = TRIP_ON_GOING;
@@ -111,8 +118,8 @@ class TripController extends Controller
         $totalReject = $this->trip->search($params, $order, $column, $offset, $limit, true);
         $params['type'] = TRIP_CANCEL;
         $totalCancel = $this->trip->search($params, $order, $column, $offset, $limit, true);
-        return $this->_getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
-            $total_pay, $total_collect, $totalAll, $totalOnGoing, $totalSchedule, $totalComplete, $totalReject, $totalCancel);
+
+        return [$totalAll, $totalOnGoing, $totalSchedule, $totalComplete, $totalReject, $totalCancel];
     }
 
     public function _getTmpNormal($i, $trip) {
@@ -172,8 +179,8 @@ class TripController extends Controller
     }
 
     public function _getResponse($request, $total, $data, $total_cash, $total_card, $total_paid_cash, $total_paid_card,
-        $total_pay, $total_collect, $totalAll = false, $totalOnGoing = false, $totalSchedule = false,
-             $totalComplete = false, $totalReject = false, $totalCancel = false) {
+        $total_pay, $total_collect, $totalAll = 0, $totalOnGoing = 0, $totalSchedule = 0,
+             $totalComplete = 0, $totalReject = 0, $totalCancel = 0) {
         return response()->json([
             'draw' => $request->input('draw'),
             "recordsTotal" => $total,

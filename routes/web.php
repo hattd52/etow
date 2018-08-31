@@ -92,6 +92,11 @@ Route::group(['middleware' => ['auth']], function () {
         'uses' => 'DriverController@destroy',
         //'middleware' => 'can:user.index'
     ]);
+    Route::get('/drivers/{type}', [
+        'as' => 'driver.by_type',
+        'uses' => 'DriverController@indexByType',
+        //'middleware' => 'can:employee.employees.index'
+    ]);
 
     //==================== Trips =====================
     Route::get('/trips', [
@@ -132,6 +137,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/ajax/trips/paid-for-driver', [
         'as' => 'ajax.trip.paid_for_driver',
         'uses' => 'Ajax\TripController@paidTrip',
+        //'middleware' => 'can:employee.employees.index'
+    ]);
+    Route::get('/trips/{type}', [
+        'as' => 'trip.by_type',
+        'uses' => 'TripController@indexByType',
         //'middleware' => 'can:employee.employees.index'
     ]);
     //==================== Setting =====================

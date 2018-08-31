@@ -8,13 +8,15 @@
             'driver' => [
                 'index' => 'Drivers',
                 'create' => 'Add A Driver',
-                'edit' => 'Edit A Driver'
+                'edit' => 'Edit A Driver',
+                'by_type' => 'Drivers'
             ],
             'trip' => [
                 'index' => 'Trips',
                 'by_user' => 'Trips',
                 'by_user_type' => 'Trips',
                 'by_driver_type' => 'Trips',
+                'by_type' => 'Trips',
             ],
             'setting' => [
                 'index' => 'Settings',

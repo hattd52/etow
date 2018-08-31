@@ -6,6 +6,7 @@ use App\Http\Controllers\ApiBaseController;
 use App\Models\Account;
 use App\Models\Trip;
 use App\Models\Price;
+use App\Models\TripReject;
 use App\Transformers\Api\TripTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -145,7 +146,12 @@ class TripController extends ApiBaseController
             goto next;
         }
 
-        $trip->status  = $status;
+        if($status != TRIP_STATUS_REJECT) {
+            $trip->status  = $status;
+        } else { // reject trip
+            $this->_insertTripReject($trip_id, $this->account->id, $note);
+        }
+        
         if(!$driver_id && $this->account->type == TYPE_DRIVER && $this->account->id != $user_id) {
             $trip->driver_id = $this->account->id;
         }
@@ -161,6 +167,17 @@ class TripController extends ApiBaseController
 
         next:
         return $this->ResponseData($data);
+    }
+
+    public function _insertTripReject($trip_id, $driver_id, $note) {
+        $rejectTrip = [
+            'trip_id' => $trip_id,
+            'driver_id' => $driver_id,
+            'note' => $note,
+            'created_at' => date('Y-m-d H:i:s', time()),
+            'updated_at' => date('Y-m-d H:i:s', time()),
+        ];
+        TripReject::insertData($rejectTrip);
     }
 
     public function updateLocation(Request $request) {
@@ -306,5 +323,28 @@ class TripController extends ApiBaseController
 
         $price = floatval($price->price);
         return $price;
+    }
+
+    public function rejectTrip() {
+        $trips = Trip::getTripReject();
+        //dd($trips);
+        if(!empty($trips)) {
+            foreach ($trips as $trip) {
+                //Trip::updateData(['id' => $trip->id], ['status' => TRIP_STATUS_REJECT]);
+                /** @var Trip $trip */
+                $trip->status = TRIP_STATUS_REJECT;
+                $trip->save();
+//                $trip_update = Trip::find($trip->id);
+//                if(!empty($trip_update)) {
+//                    $trip_update->status = TRIP_STATUS_REJECT;
+//                    $trip_update->save();
+//                }
+
+             }
+        }
+
+        $this->status  = STATUS_SUCCESS;
+        $this->message = 'Reject trip successful';
+        return $this->ResponseData();
     }
 }

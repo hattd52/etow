@@ -1,5 +1,5 @@
 <?php
-    //dd($users);
+$type = isset($type) ? $type : '';
 ?>
 
 @extends('layouts.main')
@@ -84,7 +84,22 @@
 @push('js-stack')
 <script>
     $(document).ready(function () {
-        //
+        $( "#type_search" ).val('<?= $type ?>');
+
+        var type = $( "#type_search" ).val();
+        if(type) {
+            $('#btnAll span').removeClass('trips_but').addClass('trips_but_all');
+            $('#menu_select a span').removeClass('btn-selected');
+            if(type == '<?= DRIVER_ONLINE ?>') {
+                $('#btnOnline').find('span').addClass('btn-selected');
+            } else if(type == '<?= DRIVER_OFFLINE ?>') {
+                $('#btnOffline').find('span').addClass('btn-selected');
+            } else if(type == '<?= FREE_DRIVER ?>') {
+                $('#btnFree').find('span').addClass('btn-selected');
+            } else if(type == '<?= DRIVER_ON_TRIP ?>') {
+                $('#btnTrip').find('span').addClass('btn-selected');
+            }
+        }
     });
 </script>
 

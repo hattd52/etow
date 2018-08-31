@@ -24,7 +24,7 @@ class Trip extends Model
     ];
     
     protected $hidden = [
-        'userR', 'driverR'
+        'userR', 'driverR', 'tripRejectR'
     ];
 
     public function userR() {
@@ -37,9 +37,13 @@ class Trip extends Model
     
     public function tripPaidR() {
         return $this->belongsTo(TripPaid::class, 'id', 'trip_id');
-    }    
+    }
+
+    public function tripRejectR() {
+        return $this->hasMany(TripReject::class, 'id', 'trip_id');
+    }
     
-    protected $appends = ['user', 'driver', 'status_schedule'];
+    protected $appends = ['user', 'driver', 'status_schedule', 'is_rate', 'rejects'];
         
     public function getUserAttribute()
     {
@@ -54,6 +58,16 @@ class Trip extends Model
     public function getStatusScheduleAttribute()
     {
         return $this->status.'_'.$this->is_schedule;
+    }
+
+    public function getIsRateAttribute()
+    {
+        return strlen($this->rate) ? 1 : 0;
+    }
+
+    public function getRejectsAttribute()
+    {
+        return $this->tripRejectR ? $this->tripRejectR : (object)(["name" => "Ha"]);
     }
     
     public static function totalTripByUserAndStatus($uid, $status) {
@@ -241,6 +255,15 @@ class Trip extends Model
             ->whereIn('status', $status)
             ->whereNotNull('current_latitude')
             ->whereNotNull('current_longitude')
+            ->get();
+    }
+
+    public static function getTripReject() {
+        $timeReject = Setting::getValueByKey(SETTING_TIME_REQUEST_SCHEDULE);
+        $timeCheck  = date('Y-m-d H:i:s', (time() - ($timeReject * 60)));
+        return self::query()
+            ->where('status', TRIP_STATUS_NEW)
+            ->where('created_at', '<=', $timeCheck)
             ->get();
     }
 }

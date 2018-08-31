@@ -10,7 +10,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_users'] }}</h3>
+                            <h3><a href="{{ route('user.index') }}">{{ $data['total_users'] }}</a></h3>
                             <small>Total App Users</small>
                         </h3>
                     </div>
@@ -26,7 +26,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_drivers'] }}</h3>
+                            <h3><a href="{{ route('driver.index') }}">{{ $data['total_drivers'] }}</a></h3>
                             <small>Driver And Trucks</small>
                         </h3>
                     </div>
@@ -42,7 +42,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_trip_completed'] }}</h3>
+                            <h3><a href="{{ route('trip.by_type', ['type' => TRIP_COMPLETE]) }}">{{ $data['total_trip_completed'] }}</a></h3>
                             <small>Total Completed Trips</small>
                         </h3>
                     </div>
@@ -58,7 +58,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_trip_rejected'] }}</h3>
+                            <h3><a href="{{ route('trip.by_type', ['type' => TRIP_REJECT]) }}">{{ $data['total_trip_rejected'] }}</a></h3>
                             <small>Total Rejected Trips</small>
                         </h3>
                     </div>
@@ -74,7 +74,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_trip_canceled'] }}</h3>
+                            <h3><a href="{{ route('trip.by_type', ['type' => TRIP_CANCEL]) }}">{{ $data['total_trip_canceled'] }}</a></h3>
                             <small>Total Canceled  Trips</small>
                         </h3>
                     </div>
@@ -90,7 +90,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_trip_ongoing'] }}</h3>
+                            <h3><a href="{{ route('trip.by_type', ['type' => TRIP_ON_GOING]) }}">{{ $data['total_trip_ongoing'] }}</a></h3>
                             <small>Number Of Users on trip</small>
                         </h3>
                     </div>
@@ -106,7 +106,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_driver_free'] }}</h3>
+                            <h3><a href="{{ route("driver.by_type", ['type' => FREE_DRIVER]) }}">{{ $data['total_driver_free'] }}</a></h3>
                             <small>Current Free Drivers</small>
                         </h3>
                     </div>
@@ -122,7 +122,7 @@
                 <div class="panel panel-primary">
                     <div class="number">
                         <h3>
-                            <h3>{{ $data['total_driver_offline'] }}</h3>
+                            <h3><a href="{{ route("driver.by_type", ['type' => DRIVER_OFFLINE]) }}">{{ $data['total_driver_offline'] }}</a></h3>
                             <small>Current Offline Drivers</small>
                         </h3>
                     </div>

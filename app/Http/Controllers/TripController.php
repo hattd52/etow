@@ -29,6 +29,12 @@ class TripController extends Controller
         return view('trip.index', compact('total'));
     }
 
+    public function indexByType($type)
+    {
+        $total = $this->trip->getTotalTrip();
+        return view('trip.index', compact('total', 'type'));
+    }
+
     public function byUser($user_id)
     {
         $total = $this->trip->getTotalTrip();        

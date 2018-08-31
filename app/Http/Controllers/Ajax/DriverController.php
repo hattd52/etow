@@ -55,8 +55,10 @@ class DriverController extends Controller
         $total  = 0;
 
         $drivers = $this->driver->search($params, $order, $column, $offset, $limit, false);
+        list($totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip) =
+            $this->getTotalByType($params, $order, $column, $offset, $limit);
         if($drivers->isEmpty() == true){
-            return $this->_getResponse($request, $total, $data);
+            return $this->_getResponse($request, $total, $data, $totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip);
         }
 
         $i = $request->input('start');
@@ -126,7 +128,10 @@ class DriverController extends Controller
         }
 
         $total = $this->driver->search($params, $order, $column, $offset, $limit, true);
+        return $this->_getResponse($request, $total, $data, $totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip);
+    }
 
+    public function getTotalByType(&$params, $order, $column, $offset, $limit) {
         $params['type'] = '';
         $totalAll = $this->driver->search($params, $order, $column, $offset, $limit, true);
         $params['type'] = DRIVER_ONLINE;
@@ -137,7 +142,8 @@ class DriverController extends Controller
         $totalFree = $this->driver->search($params, $order, $column, $offset, $limit, true);
         $params['type'] = DRIVER_ON_TRIP;
         $totalOnTrip = $this->driver->search($params, $order, $column, $offset, $limit, true);
-        return $this->_getResponse($request, $total, $data, $totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip);
+
+        return [$totalAll, $totalOnline, $totalOffline, $totalFree, $totalOnTrip];
     }
 
     public function _getResponse($request, $total, $data, $totalAll = 0, $totalOnline = 0, $totalOffline = 0, $totalFree = 0, $totalOnTrip = 0) {

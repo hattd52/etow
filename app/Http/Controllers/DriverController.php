@@ -33,6 +33,12 @@ class DriverController extends Controller
         return view('driver.index', compact('total'));
     }
 
+    public function indexByType($type)
+    {
+        $total =  $this->driver->getTotalDriver();
+        return view('driver.index', compact('total', 'type'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
