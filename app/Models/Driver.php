@@ -194,7 +194,7 @@ class Driver extends Model
         return [$query, $column];
     }
 
-    public function getListDriverOnTrip() {
+    public static function getListDriverOnTrip() {
         return Trip::query()->whereNotIn('status', [TRIP_STATUS_CANCEL, TRIP_STATUS_REJECT, TRIP_STATUS_COMPLETED])
             ->whereNotNull('driver_id')
             ->groupBy('driver_id')

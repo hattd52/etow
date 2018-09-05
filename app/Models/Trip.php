@@ -43,7 +43,7 @@ class Trip extends Model
         return $this->hasMany(TripReject::class, 'id', 'trip_id');
     }
     
-    protected $appends = ['user', 'driver', 'status_schedule', 'is_rate', 'rejects'];
+    protected $appends = ['user', 'driver', 'status_schedule', 'is_rate', 'rejects', 'driver_available'];
         
     public function getUserAttribute()
     {
@@ -68,6 +68,49 @@ class Trip extends Model
     public function getRejectsAttribute()
     {
         return $this->tripRejectR ? $this->tripRejectR : (object)(["name" => "Ha"]);
+    }
+
+    public function getDriverAvailableAttribute()
+    {
+        $radius = Setting::getValueByKey(SETTING_RADIUS_REQUEST);
+
+        $query = self::query();
+        $query->leftJoin('driver', 'driver.user_id', '=', 'trip.driver_id');
+        $query->join('account', 'account.id', '=', 'driver.user_id');
+        //$query->select('trip.*');
+
+        $distance = "(6371 * acos(cos(radians(trip.pickup_latitude)) 
+                     * cos(radians(account.latitude)) 
+                     * cos(radians(account.longitude) 
+                     - radians(trip.pickup_longitude)) 
+                     + sin(radians(trip.pickup_latitude)) 
+                     * sin(radians(account.latitude))))";
+        $query->whereRaw($distance ." <= ".$radius);
+
+        $driverOnTrip = Driver::getListDriverOnTrip();
+        $query->where(function ($query) use ($driverOnTrip) {
+            $query->whereNull('trip.driver_id');
+            $query->orWhere(function ($query) use ( $driverOnTrip) {
+                $query->whereIn('trip.status', [TRIP_STATUS_CANCEL, TRIP_STATUS_REJECT, TRIP_STATUS_COMPLETED]);
+                if(!empty($driverOnTrip)) {
+                    $query->whereNotIn( 'trip.driver_id', $driverOnTrip);
+                }
+            });
+        });
+        $query->groupBy('driver.user_id');
+        $data = $query->pluck('driver.user_id');
+
+        return $data ? $data : (object)(["name" => "Yoona"]);
+    }
+
+    public static function _getDistanceByCoordinate($plat, $plong, $lat, $long) {
+        $theta = $plong - $long;
+        $dist  = sin(deg2rad($plat)) * sin(deg2rad($lat)) +  cos(deg2rad($plat)) * cos(deg2rad($lat)) * cos(deg2rad($theta));
+        $dist  = acos($dist);
+        $dist  = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $km    = $miles * 1.609344;
+        return $km;
     }
     
     public static function totalTripByUserAndStatus($uid, $status) {
