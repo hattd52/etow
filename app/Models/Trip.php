@@ -75,15 +75,15 @@ class Trip extends Model
         $radius = Setting::getValueByKey(SETTING_RADIUS_REQUEST);
 
         $query = self::query();
-        $query->leftJoin('driver', 'driver.user_id', '=', 'trip.driver_id');
+        $query->rightJoin('driver', 'driver.user_id', '=', 'trip.driver_id');
         $query->join('account', 'account.id', '=', 'driver.user_id');
         //$query->select('trip.*');
 
-        $distance = "(6371 * acos(cos(radians(trip.pickup_latitude)) 
+        $distance = "(6371 * acos(cos(radians(".$this->pickup_latitude.")) 
                      * cos(radians(account.latitude)) 
                      * cos(radians(account.longitude) 
-                     - radians(trip.pickup_longitude)) 
-                     + sin(radians(trip.pickup_latitude)) 
+                     - radians(".$this->pickup_longitude.")) 
+                     + sin(radians(".$this->pickup_latitude.")) 
                      * sin(radians(account.latitude))))";
         $query->whereRaw($distance ." <= ".$radius);
 

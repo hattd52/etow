@@ -59,7 +59,7 @@ class Account extends Authenticatable
     public function checkDriverIsFree() {
         $query  = Trip::query()->where('driver_id', $this->id);
         $data = $query->get();
-        if(empty($data))
+        if(!count($data))
             return 1;
 
         $is_free = 0;

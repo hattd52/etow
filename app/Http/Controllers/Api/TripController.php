@@ -347,4 +347,30 @@ class TripController extends ApiBaseController
         $this->message = 'Reject trip successful';
         return $this->ResponseData();
     }
+
+    public function getDistanceByCoordinate(Request $request) {
+        $trip_lat  = $request->get('trip_lat');
+        $trip_long = $request->get('trip_long');
+
+        $distances = [];
+        $drivers   = Account::query()
+            ->selectRaw(DB::raw("(6371 * acos(cos(radians(".$trip_lat."))
+                * cos(radians(account.latitude))
+                * cos(radians(account.longitude)
+                - radians(".$trip_long."))
+                + sin(radians(".$trip_lat."))
+                * sin(radians(account.longitude)))) as distance, id" ))
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->where('type', TYPE_DRIVER)
+            ->get();
+        //dd($drivers);
+        if(!empty($drivers)) {
+            foreach ($drivers as $driver) {
+                $distances[$driver->id] = $driver->distance;
+            }
+        }
+
+        return $this->ResponseData($distances);
+    }
 }

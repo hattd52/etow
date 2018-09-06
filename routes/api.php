@@ -89,6 +89,7 @@ Route::get('/v1/test-sms', 'Api\TestController@testSMS');
     Route::post('/v1/user/reset-password', 'Api\AccountController@forgotPassword');
     Route::any('/v1/user/get-otp', 'Api\AccountController@getOTP');
     Route::post('/v1/user/verify-otp', 'Api\AccountController@verifyOTP');
+    Route::post('/v1/trip/get-distance', 'Api\TripController@getDistanceByCoordinate');
 //});
 
 Route::group(['middleware' => ['auth.api']], function () {
