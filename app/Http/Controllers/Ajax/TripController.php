@@ -164,9 +164,8 @@ class TripController extends Controller
             $trip->pickup_date,
             $this->getLabelStatus($trip->status, $trip->is_schedule),
             $trip->note.'', // reason for cancel/reject
-            $trip->payment_status == PAYMENT_STATUS_PENDING ? '' :
-                ($trip->payment_status == PAYMENT_STATUS_SUCCESS ? $trip->price.' AED' : ''), // paid by cash
-            '', // paid by card
+            ($trip->payment_type === PAYMENT_METHOD_CASH && $trip->payment_status == PAYMENT_STATUS_SUCCESS) ? $trip->price.' AED' : '', // paid by cash
+            ($trip->payment_type === PAYMENT_METHOD_CARD && $trip->payment_status == PAYMENT_STATUS_SUCCESS) ? $trip->price.' AED' : '', // paid by card
             $trip->payment_status == PAYMENT_STATUS_PENDING ? '<span style="color:red">Pending</span>' :
                 ($trip->payment_status == PAYMENT_STATUS_SUCCESS ?
                     '<span style="color:green">Paid</span>' : '<span style="color:red">Failed</span>'), // payment status

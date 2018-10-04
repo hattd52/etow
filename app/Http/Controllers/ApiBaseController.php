@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Setting;
 use App\Models\UserToken;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
@@ -179,5 +180,48 @@ class ApiBaseController extends Controller
         }
 
         return true;
+    }
+
+    public static function pushNotify($registrationIDs,$msg)
+    {
+        $apiKey = Setting::getValueByKey(SETTING_RADIUS_REQUEST);
+        $url = 'https://android.googleapis.com/gcm/send';
+
+        $loop = ceil (count($registrationIDs)/1000);
+        $msg = array
+        (
+            'message'=>$msg
+        );
+
+        for ($i = 1; $i<=$loop; $i++)
+        {
+            if (0 <count($registrationIDs) && count($registrationIDs) <1000)
+                $registrationID = $registrationIDs;
+            else
+            {
+                $registrationID = array_slice($registrationIDs,0,1000);
+                $registrationIDs = array_slice($registrationIDs,1000,count($registrationIDs));
+            }
+
+            $fields = array
+            (
+                'registration_ids' => $registrationID,
+                'data' => $msg
+            );
+
+            $headers = array(
+                'Authorization: key=' . $apiKey,
+                'Content-Type: application/json'
+            );
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+            curl_exec($ch);
+            curl_close($ch);
+        }
     }
 }

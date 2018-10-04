@@ -69,7 +69,7 @@
             <div class="clearfix"></div>
             <div class="b_l_gal" style="width: 100px; height: 70px">
                 @if($driver->userR && $driver->userR->avatar)
-                    <img src="{{ asset('upload/account/'.$driver->userR->avatar) }}" class="img-responsive"/>
+                    <img height="65px" src="{{ asset('upload/account/'.$driver->userR->avatar) }}" class="img-responsive"/>
                 @else
                     <img src="#" style="width: 100px; height: 70px;display: none" id="driver_upload" class="img-responsive"/>
                 @endif
@@ -85,7 +85,7 @@
             <div class="clearfix"></div>
             <div class="b_l_gal" style="width: 100px; height: 70px">
                 @if($driver->driver_license)
-                    <img src="{{ asset('upload/driver/'.$driver->driver_license) }}" class="img-responsive"/>
+                    <img height="65px" src="{{ asset('upload/driver/'.$driver->driver_license) }}" class="img-responsive"/>
                 @else
                     <img src="#" style="width: 100px; height: 70px;display: none" id="license_upload" class="img-responsive"/>
                 @endif
@@ -99,9 +99,9 @@
         <div class="form-group">
             <label for="">Upload Driver Emirates ID</label>
             <div class="clearfix"></div>
-            <div class="b_l_gal" style="width: 100px; height: 70px">
+            <div class="b_l_gal" style="width: 100px; height: 70px;">
                 @if($driver->emirate_id)
-                    <img src="{{ asset('upload/driver/'.$driver->emirate_id) }}" class="img-responsive"/>
+                    <img height="65px" src="{{ asset('upload/driver/'.$driver->emirate_id) }}" class=""/>
                 @else
                     <img src="#" style="width: 100px; height: 70px;display: none" id="emirate_upload" class="img-responsive"/>
                 @endif
@@ -117,7 +117,7 @@
             <div class="clearfix"></div>
             <div class="b_l_gal" style="width: 100px; height: 70px">
                 @if($driver->mulkiya)
-                    <img src="{{ asset('upload/driver/'.$driver->mulkiya) }}" class="img-responsive"/>
+                    <img height="65px" src="{{ asset('upload/driver/'.$driver->mulkiya) }}" class="img-responsive"/>
                 @else
                     <img src="#" style="width: 100px; height: 70px;display: none" id="mulkiya_upload" class="img-responsive"/>
                 @endif

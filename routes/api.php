@@ -61,7 +61,7 @@ const
     
 const 
     VEHICLE_TYPE_FLAT_BED = 'flatbed',
-    VEHICLE_TYPE_NORMAL = 'normal';    
+    VEHICLE_TYPE_NORMAL = 'normal';
 
 if(isset($_SERVER['HTTP_ORIGIN'])) {
     header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
@@ -90,6 +90,7 @@ Route::get('/v1/test-sms', 'Api\TestController@testSMS');
     Route::any('/v1/user/get-otp', 'Api\AccountController@getOTP');
     Route::post('/v1/user/verify-otp', 'Api\AccountController@verifyOTP');
     Route::post('/v1/trip/get-distance', 'Api\TripController@getDistanceByCoordinate');
+    Route::post('/v1/device/test-push', 'Api\AccountController@pushNotification');
 //});
 
 Route::group(['middleware' => ['auth.api']], function () {

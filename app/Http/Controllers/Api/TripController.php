@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\ApiBaseController;
 use App\Models\Account;
 use App\Models\Trip;
-use App\Models\Price;
 use App\Models\TripReject;
+use App\Models\Price;
 use App\Transformers\Api\TripTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use JWTAuth;
 use JWTAuthException;
 use App\Models\Setting;
+use App\Models\Device;
 
 class TripController extends ApiBaseController
 {
@@ -52,6 +53,9 @@ class TripController extends ApiBaseController
         $distance     = isset($trips->distance) ? $trips->distance : '';
         if($distance) {
             $priceAmount = $this->getPriceDistance($distance);
+            if($trips->vehicle_type === VEHICLE_TYPE_FLAT_BED) {
+                $priceAmount += 100;
+            }
             if($priceAmount !=  $price) {
                 $this->message = 'Price invalid. Please check again.';
                 $this->http_code = MISSING_PARAMS;
@@ -67,7 +71,8 @@ class TripController extends ApiBaseController
 
         $user_id = $this->account->id;
         $trip_id = $this->_createTrip($user_id, $trips);
-        //$trip = Trip::insertData($dataInsert);
+        //Trip::insertData($dataInsert);
+
         if($trip_id) {
             $data['trip_id'] = $trip_id;
             $this->status  = 'success';
@@ -151,8 +156,8 @@ class TripController extends ApiBaseController
         } else { // reject trip
             $this->_insertTripReject($trip_id, $this->account->id, $note);
         }
-        
-        if(!$driver_id && $this->account->type == TYPE_DRIVER && $this->account->id != $user_id) {
+
+        if(!$driver_id && $this->account->type == TYPE_DRIVER && $this->account->id != $user_id && $status != TRIP_STATUS_REJECT) {
             $trip->driver_id = $this->account->id;
         }
         if($status == TRIP_STATUS_COMPLETED) {
@@ -160,13 +165,26 @@ class TripController extends ApiBaseController
         } elseif(in_array($status, [TRIP_STATUS_CANCEL, TRIP_STATUS_REJECT])) {
             $trip->payment_status = PAYMENT_STATUS_FAIL;
         }
-        $trip->save();
+
+        $is_save = $trip->save();
+//        if($is_save) {
+//            if($trip->is_schedule == STATUS_ACTIVE && $trip->status == TRIP_STATUS_ACCEPT) {
+//                $this->pushNotifyForUser($trip->user_id);
+//            }
+//        }
 
         $this->status  = STATUS_SUCCESS;
         $this->message = 'update status trip successfully';
 
         next:
         return $this->ResponseData($data);
+    }
+
+    public function pushNotifyForUser($user_id) {
+        $tokenByUser = Device::getTokenByUser($user_id);
+        if(!empty($tokenByUser)) {
+            $msg = '';
+        }
     }
 
     public function _insertTripReject($trip_id, $driver_id, $note) {
@@ -225,6 +243,7 @@ class TripController extends ApiBaseController
             $trip->save();
         }
 
+        $this->status  = STATUS_SUCCESS;
         $this->message = 'update location trip successfully';
 
         next:
@@ -282,8 +301,8 @@ class TripController extends ApiBaseController
             $this->http_code = MISSING_PARAMS;
             goto next;
         }
-
-        $price = Price::getPriceByDistance($distance);
+        //dd(intval($distance));
+        $price = Price::getPriceByDistance(intval($distance));
         if(empty($price)) {
             $this->message = 'Price not found';
             $this->http_code = PRICE_NOT_FOUND;
@@ -301,14 +320,20 @@ class TripController extends ApiBaseController
     }
 
     public function getSettingTime() {
-        $timeKm        = Setting::getValueByKey(SETTING_TIME_KM);
-        $timeBuffer    = Setting::getValueByKey(SETTING_TIME_BUFFER);
+        $timeKm     = Setting::getValueByKey(SETTING_TIME_KM);
+        $timeBuffer = Setting::getValueByKey(SETTING_TIME_BUFFER);
+        $timeRequestSchedule = Setting::getValueByKey(SETTING_TIME_REQUEST_SCHEDULE);
+        $timeEstimateArrive = Setting::getValueByKey(SETTING_TIME_ESTIMATE_ARRIVE);
         $radiusRequest = Setting::getValueByKey(SETTING_RADIUS_REQUEST);
+        $priceFlatbed = Setting::getValueByKey(SETTING_PRICE_FLATBED);
 
         $data = [
             'time_km'     => $timeKm,
             'time_buffer' => $timeBuffer,
-            'radius_request' => $radiusRequest
+            'time_request_schedule' => $timeRequestSchedule,
+            'time_estimate_arrive' => $timeEstimateArrive,
+            'radius_request' => $radiusRequest,
+            'price_flatbed' => $priceFlatbed
         ];
         $this->status  = STATUS_SUCCESS;
         $this->message = 'Get time setting successful';
@@ -321,7 +346,7 @@ class TripController extends ApiBaseController
             $price = 0;
         }
 
-        $price = floatval($price->price);
+        $price = floatval($price->price) * $distance;
         return $price;
     }
 
@@ -330,17 +355,14 @@ class TripController extends ApiBaseController
         //dd($trips);
         if(!empty($trips)) {
             foreach ($trips as $trip) {
+                //$trip->status = TRIP_STATUS_REJECT;
+                //$trip->save();
                 //Trip::updateData(['id' => $trip->id], ['status' => TRIP_STATUS_REJECT]);
+
                 /** @var Trip $trip */
                 $trip->status = TRIP_STATUS_REJECT;
                 $trip->save();
-//                $trip_update = Trip::find($trip->id);
-//                if(!empty($trip_update)) {
-//                    $trip_update->status = TRIP_STATUS_REJECT;
-//                    $trip_update->save();
-//                }
-
-             }
+            }
         }
 
         $this->status  = STATUS_SUCCESS;
@@ -349,17 +371,17 @@ class TripController extends ApiBaseController
     }
 
     public function getDistanceByCoordinate(Request $request) {
-        $trip_lat  = $request->get('trip_lat');
-        $trip_long = $request->get('trip_long');
-
+        $trip_lat  = floatval($request->get('trip_lat'));
+        $trip_long = floatval($request->get('trip_long'));
+        //dd($trip_lat, $trip_long);
         $distances = [];
         $drivers   = Account::query()
             ->selectRaw(DB::raw("(6371 * acos(cos(radians(".$trip_lat."))
-                * cos(radians(account.latitude))
-                * cos(radians(account.longitude)
+                * cos(radians(latitude))
+                * cos(radians(longitude)
                 - radians(".$trip_long."))
                 + sin(radians(".$trip_lat."))
-                * sin(radians(account.longitude)))) as distance, id" ))
+                * sin(radians(longitude)))) as distance, id" ))
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->where('type', TYPE_DRIVER)
@@ -367,10 +389,30 @@ class TripController extends ApiBaseController
         //dd($drivers);
         if(!empty($drivers)) {
             foreach ($drivers as $driver) {
+                //$distance =
+                dd($driver->distance);
                 $distances[$driver->id] = $driver->distance;
             }
         }
 
         return $this->ResponseData($distances);
+    }
+
+    public function pushNotification(Request $request) {
+        $user_id = $request->get('user_id');
+        $message = $request->get('msg');
+
+        $query = Device::query();
+        if($user_id) {
+            $query->where('user_id', $user_id);
+        }
+        $devices = $query->pluck('token');
+        if(!empty($devices)) {
+            $this->pushNotify($devices, $message);
+        }
+
+//        $this->status  = STATUS_SUCCESS;
+//        $this->message = 'Push Successfully!';
+//        return $this->ResponseData();
     }
 }

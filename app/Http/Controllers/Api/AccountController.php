@@ -10,9 +10,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiBaseController;
 use App\Models\Account;
+use App\Models\Device;
 use App\Models\Driver;
 use App\Models\Otp;
-use App\Models\Trip;
 use App\Models\UserToken;
 use App\Transformers\Api\AccountTransformer;
 use Carbon\Carbon;
@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use \Illuminate\Support\Facades\Auth;
+use App\Models\Trip;
+
 
 class AccountController extends ApiBaseController
 {
@@ -51,7 +53,7 @@ class AccountController extends ApiBaseController
         if($avatar) {
             //$image_ext = $avatar->getClientOriginalExtension();
             //$imageName = time()  . 'avatar.' . $image_ext;
-            
+
             $imgdata   = base64_decode($avatar);
             $f         = finfo_open();
             $mime_type = finfo_buffer($f, $imgdata, FILEINFO_MIME_TYPE);
@@ -68,7 +70,8 @@ class AccountController extends ApiBaseController
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
             'token'      => $token,
-            'avatar'     => URL::to('/get-avatar/'.$imageName)
+            'avatar'     => $imageName
+            //'avatar'     => URL::to('/get-avatar/'.$imageName)
         ];
         Account::insertData($dataInsert);
 
@@ -106,7 +109,7 @@ class AccountController extends ApiBaseController
             $this->http_code = MISSING_PARAMS;
             goto next;
         }
-        
+
         $credentials = $request->only('email', 'password');
         $token = null;
         try {
@@ -119,7 +122,6 @@ class AccountController extends ApiBaseController
             $this->message = 'failed_to_create_token.';
             goto next;
         }
-
 
         /** @var Account $account */
         $account        = Auth::user();
@@ -138,11 +140,38 @@ class AccountController extends ApiBaseController
         $account = Account::query()->where('email', $email)->first();
         //$data = AccountTransformer::collection($account);
         $data = new AccountTransformer($account);
+
+        // update device
+        $this->updateDevice($account->id, $request);
+
         $this->status  = 'success';
         $this->message = 'Login successfully';
 
         next:
         return $this->ResponseData($data);
+    }
+
+    public function updateDevice($user_id, Request $request) {
+        $ime    = $request->get('ime');
+        $token  = $request->get('token');
+
+        $checkDeviceUser = Device::checkUserExist($user_id);
+        if(!empty($checkDeviceUser)) {
+            $dataUpdate = [
+                'ime'   => $ime,
+                'token' => $token
+            ];
+            Device::updateData(['user_id' => $user_id], $dataUpdate);
+        } else {
+            $dataInsert = [
+                'user_id' => $user_id,
+                'ime'     => $ime,
+                'token'   => $token,
+                'status'  => STATUS_ACTIVE,
+                'created_at' => date('Y-m-d H:i:s', time())
+            ];
+            Device::insertData($dataInsert);
+        }
     }
 
     public function logout(Request $request)
@@ -163,7 +192,7 @@ class AccountController extends ApiBaseController
             $this->http_code = LOGOUT_FAILED;
             goto next;
         }
-        
+
         next:
         return $this->ResponseData();
     }
@@ -179,7 +208,7 @@ class AccountController extends ApiBaseController
                 $this->http_code = PASSWORD_MISSING;
                 return $this->ResponseData($data);
             }
-            
+
             $account   = Account::checkTokenExist($token);
             $oldAvatar = $account->avatar;
             if(!strlen($is_online)) {
@@ -189,44 +218,44 @@ class AccountController extends ApiBaseController
                     $this->http_code = PASSWORD_INCORRECT;
                     return $this->ResponseData($data);
                 }
-            }    
-    
+            }
+
             $imageName = '';
             if($avatar) {
                 //$image_ext = $avatar->getClientOriginalExtension();
                 //$imageName = time()  . 'avatar.' . $image_ext;
-                
+
                 $imgdata   = base64_decode($avatar);
                 $f         = finfo_open();
                 $mime_type = finfo_buffer($f, $imgdata, FILEINFO_MIME_TYPE);
                 $type_file = explode('/',$mime_type);
                 $imageName = time().'avatar.'.$type_file[1];
             }
-    
+
             $dataUpdate = [];
             if($phone)
                 $dataUpdate['phone'] = $phone;
             if($full_name)
                 $dataUpdate['full_name'] = $full_name;
             if($avatar)
-                $dataUpdate['avatar'] = URL::to('/get-avatar/'.$imageName);;
+                $dataUpdate['avatar'] = $imageName;
             Account::updateData(['token' => $token], $dataUpdate);
-    
+
             if($avatar) {
                 $file_path = public_path('upload/account');
                 //$avatar->move($file_path, $imageName);
                 file_put_contents($file_path.DIRECTORY_SEPARATOR.$imageName, base64_decode($avatar));
-    
-                if($oldAvatar) {
-                    $oldAvatar = substr($oldAvatar, strrpos($oldAvatar,'/') + 1);
+
+                if($oldAvatar && file_exists($file_path.DIRECTORY_SEPARATOR.$oldAvatar)) {
+                    //$oldAvatar = substr($oldAvatar, strrpos($oldAvatar,'/') + 1);
                     unlink($file_path.DIRECTORY_SEPARATOR.$oldAvatar);
                 }
             }
-        }    
+        }
 
         $account = Account::checkTokenExist($token);
         $data    = new AccountTransformer($account);
-        
+
         if(strlen($is_online)) {
             $driver = Driver::query()->where('user_id', $account->id)->first();
             if($driver){
@@ -234,7 +263,7 @@ class AccountController extends ApiBaseController
                 $driver->save();
             }
         }
-        
+
         $this->status  = STATUS_SUCCESS;
         $this->message = 'update successfully';
         return $this->ResponseData($data);
@@ -243,7 +272,7 @@ class AccountController extends ApiBaseController
     public function forgotPassword(Request $request) {
         list($email, $password, $phone, $full_name) = $this->_getParams($request);
 
-        $checkEmailExist = Account::checkEmailExist($email);
+        $checkEmailExist = Account::checkEmailUserExist($email);
         if(empty($checkEmailExist)) {
             $this->message = 'Email does not exist.';
             $this->http_code = EMAIL_DOES_NOT_EXIST;
@@ -265,10 +294,10 @@ class AccountController extends ApiBaseController
         ];
         $template = 'reset_password';
         $this->sendMail($dataSend, $template);
-        
+
         $this->status  = STATUS_SUCCESS;
         $this->message = 'Reset password successfully, Please check your email.';
-        
+
         next:
         return $this->ResponseData();
     }
@@ -334,7 +363,7 @@ class AccountController extends ApiBaseController
         $data = [];
         $trip_id = $request->get('trip_id');
         $rate = $request->get('rate');
-        if(!$trip_id || !$rate) {
+        if(!$trip_id || !strlen($rate)) {
             $this->message = 'Missing params';
             $this->http_code = MISSING_PARAMS;
             goto next;
@@ -343,6 +372,12 @@ class AccountController extends ApiBaseController
         /** @var Trip $trip */
         $trip      = Trip::find($trip_id);
         if(!empty($trip)) {
+            if($this->account->id != $trip->user_id) {
+                $this->message = 'You are not permission with this trip';
+                $this->http_code = TRIP_NOT_PERMISSION;
+                goto next;
+            }
+
             $trip->rate  = $rate;
             $trip->save();
         }
